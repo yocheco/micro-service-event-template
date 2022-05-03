@@ -1,5 +1,3 @@
-
-
 ## Nomenclatura routing keys
 empresa.Servicio.v1.event.entidad.evento
 houndy.userService.v1.event.user.created
@@ -8,6 +6,7 @@ servicio.entidad.accion_on_evento
 authService.authUser.createAuthUser_on_user.created
 
 
+## Nomenclatura Message
 new Message
 
 {
@@ -17,13 +16,13 @@ new Message
     id: event.eventId,
     attributes: {
       'id': 'id del recurso',
-      'user':{user}
+      'user':{ user }
     }
   },
   meta: {}
 }
 
-
+## Nomenclatura log
 this.logger.info(`[RabbitMqEventBus] Event to be published: ${event.eventName}`);
 
 ## Codigos git

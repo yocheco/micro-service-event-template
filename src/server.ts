@@ -8,10 +8,12 @@ import helmet from 'helmet'
 import errorHandler from 'errorhandler'
 import indexRoutes from './routes/index'
 import morgan from 'morgan'
+import SwaggerUi from 'swagger-ui-express'
+import swaggerJSDoc from './lib/swagger'
 
 export class Server {
-  private express: express.Express
   private port: string
+  private express: express.Express
   private httpServer?: http.Server
 
   constructor (port: string) {
@@ -43,6 +45,9 @@ export class Server {
     // 🔀 Routes
     // index
     router.use('/', indexRoutes)
+
+    // Swagger
+    router.use('/doc', SwaggerUi.serve, SwaggerUi.setup(swaggerJSDoc))
 
     // Error handling
     router.use((err: Error, req: Request, res: Response, next: Function) => {
