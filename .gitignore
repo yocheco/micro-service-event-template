@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.tmp
+logs/
+data
+test-results.xml
+.eslintcache
+coverage
+*.ignore
+.vscode
+.env
+error.log
