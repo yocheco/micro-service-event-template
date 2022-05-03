@@ -1,7 +1,11 @@
 import express, { Request, Response } from 'express'
+import compress from 'compression'
+import bodyParser from 'body-parser'
 import Router from 'express-promise-router'
 import httpStatus from 'http-status'
 import * as http from 'http'
+import helmet from 'helmet'
+import errorHandler from 'errorhandler'
 export class Server {
   private express: express.Express
   private port: string
@@ -10,14 +14,27 @@ export class Server {
   constructor (port: string) {
     this.port = port
     this.express = express()
+    // Body
+    this.express.use(bodyParser.json())
+    this.express.use(bodyParser.urlencoded({ extended: true }))
+    // Helmet
+    this.express.use(helmet.xssFilter())
+    this.express.use(helmet.noSniff())
+    this.express.use(helmet.hidePoweredBy())
+    this.express.use(helmet.frameguard({ action: 'deny' }))
+    // Compress
+    this.express.use(compress())
     // Router
     const router = Router()
+    router.use(errorHandler())
     this.express.use(router)
 
     // Route  /health-check
     router.get('/health-check', function (req, res) {
-      return res.status(httpStatus.OK).send()
+      res.status(httpStatus.OK).send()
     })
+
+    // TODO:routes
 
     // Error handling
     router.use((err: Error, req: Request, res: Response, next: Function) => {
@@ -30,7 +47,7 @@ export class Server {
     return new Promise(resolve => {
       this.httpServer = this.express.listen(this.port, () => {
         console.log(
-          `  Mock Backend App is running at http://localhost:${this.port} in ${this.express.get('env')} mode`
+          `Server is running at http://localhost:${this.port} in ${this.express.get('env')} mode`
         )
         console.log('  Press CTRL-C to stop\n')
         resolve()
