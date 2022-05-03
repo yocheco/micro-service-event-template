@@ -1,3 +1,7 @@
+## Errors
+throw new APIError(errMessage, 'saveInDB', HttpStatusCode.ALREADY_EXISTS)
+throw new BaseError('Could not perform async operation', err, 'saveInDB')
+
 ## Nomenclatura routing keys
 empresa.Servicio.v1.event.entidad.evento
 houndy.userService.v1.event.user.created

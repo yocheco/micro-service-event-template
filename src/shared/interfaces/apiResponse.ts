@@ -1,7 +1,8 @@
 import { HttpStatusCode } from '../types/http.model'
 
 export interface ApiResponse<T> {
-  status: HttpStatusCode
+  status: boolean
+  code: HttpStatusCode
   message?: string
   data?: T
 }
