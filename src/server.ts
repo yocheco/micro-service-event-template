@@ -7,6 +7,7 @@ import * as http from 'http'
 import helmet from 'helmet'
 import errorHandler from 'errorhandler'
 import indexRoutes from './routes/index'
+import morgan from 'morgan'
 
 export class Server {
   private express: express.Express
@@ -24,6 +25,9 @@ export class Server {
     this.express.use(helmet.noSniff())
     this.express.use(helmet.hidePoweredBy())
     this.express.use(helmet.frameguard({ action: 'deny' }))
+    // Morgan
+    // dev or common
+    this.express.use(morgan('dev'))
     // Compress
     this.express.use(compress())
     // Router
