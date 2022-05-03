@@ -6,6 +6,8 @@ import httpStatus from 'http-status'
 import * as http from 'http'
 import helmet from 'helmet'
 import errorHandler from 'errorhandler'
+import indexRoutes from './routes/index'
+
 export class Server {
   private express: express.Express
   private port: string
@@ -34,7 +36,9 @@ export class Server {
       res.status(httpStatus.OK).send()
     })
 
-    // TODO:routes
+    // 🔀 Routes
+    // index
+    router.use('/', indexRoutes)
 
     // Error handling
     router.use((err: Error, req: Request, res: Response, next: Function) => {
