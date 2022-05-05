@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import httpStatus from 'http-status'
 import { Iindex } from '../models'
-import { BaseError } from '../shared/errors/base'
+import { BaseError } from '../shared/errors/baseError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'
 import { HttpStatusCode } from '../shared/types/http.model'
 import { ApiError } from '../shared/errors/apiError'

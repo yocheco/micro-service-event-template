@@ -1,6 +1,6 @@
 import amqp from 'amqplib'
 import indexController from '../../../controllers/indexController'
-import { BaseError } from '../../../shared/errors/base'
+import { BaseError } from '../../../shared/errors/baseError'
 
 const connectionRMQ = process.env.connectionRMQ || 'amqp://localhost'
 const exchangeBaseName = process.env.exchangeBaseName || 'houndy.userService.v1.event.'

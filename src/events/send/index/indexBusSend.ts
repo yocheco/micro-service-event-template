@@ -1,5 +1,5 @@
 import { Iindex } from '../../../models'
-import { BaseError } from '../../../shared/errors/base'
+import { BaseError } from '../../../shared/errors/baseError'
 import amqp from 'amqplib'
 import { IMessageBus } from '../../../shared/interfaces/messageBus'
 
