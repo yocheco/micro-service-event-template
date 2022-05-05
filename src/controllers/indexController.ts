@@ -2,9 +2,10 @@ import { Request, Response, NextFunction } from 'express'
 import httpStatus from 'http-status'
 import { Iindex } from '../models'
 import { BaseError } from '../shared/errors/base'
-import { ApiResponse } from '../shared/interfaces/apiResponse'
+import { IApiResponse } from '../shared/interfaces/apiResponse'
 import { HttpStatusCode } from '../shared/types/http.model'
 import { ApiError } from '../shared/errors/apiError'
+import indexBusSend from '../events/send/index/indexBusSend'
 
 class IndexController {
   public index = async (req: Request, res: Response, next: NextFunction) => {
@@ -17,8 +18,11 @@ class IndexController {
 
       if (n > 5) throw new ApiError('Error Auth no enviado', 'index', HttpStatusCode.UNAUTHORIZED)
 
+      // Send event
+      indexBusSend.userAdd(index)
+
       // Create response
-      const responseOk: ApiResponse<Iindex> = {
+      const responseOk: IApiResponse<Iindex> = {
         status: true,
         code: HttpStatusCode.OK,
         data: index
@@ -26,13 +30,24 @@ class IndexController {
       res.status(httpStatus.OK).send(responseOk)
     } catch (err) {
       const message = err instanceof ApiError ? err.message : 'Generic error for user'
-      const responseError: ApiResponse<any> = {
+      const responseError: IApiResponse<any> = {
         status: false,
         code: HttpStatusCode.UNAUTHORIZED,
         message
       }
       res.status((<BaseError>err)?.httpCode || 500).send(responseError)
-      next(err)
+      // next(err)
+    }
+  }
+
+  public tetsRMQ = async (message:any) => {
+    try {
+      console.log('init controller')
+      const content = JSON.parse(message.content.toString())
+      console.log(content)
+      console.log('finish controller')
+    } catch (error) {
+
     }
   }
 }
