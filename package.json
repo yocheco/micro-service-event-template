@@ -41,6 +41,7 @@
     "morgan": "^1.10.0",
     "swagger-jsdoc": "^6.2.1",
     "swagger-ui-express": "^4.3.0",
-    "ts-node-dev": "^1.1.8"
+    "ts-node-dev": "^1.1.8",
+    "winston": "^3.7.2"
   }
 }

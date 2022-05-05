@@ -1,7 +1,8 @@
 import { Iindex } from '../../../models'
-import { BaseError } from '../../../shared/errors/baseError'
 import amqp from 'amqplib'
 import { IMessageBus } from '../../../shared/interfaces/messageBus'
+import winstonLogger from '../../../lib/WinstonLogger'
+import { RmqError } from '../../../shared/errors/rmqError'
 
 const exchangeBaseName = process.env.exchangeBaseName || 'houndy.userService.v1.event.'
 const exchangeType = process.env.exchangeType || 'fanout'
@@ -10,8 +11,9 @@ const connectionRMQ = process.env.connectionRMQ || 'amqp://localhost'
 class IndexBusSend {
   public userAdd = async (user: Iindex) => {
     try {
-      if (!user) throw new BaseError('Sould send a valid user to message queue', 'Sould send a valid user to message queue', 'user.add')
-      console.log('Send message to RMQ')
+      if (!user) {
+        winstonLogger.error(new RmqError('Sould send a valid user to message queue'))
+      }
       const connection = await amqp.connect(connectionRMQ)
       const exchangeName = exchangeBaseName + 'index.created'
       const channel = await connection.createChannel()
@@ -28,8 +30,9 @@ class IndexBusSend {
       }
 
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
+      winstonLogger.info('[RabbitMqEventBus] Message send to: ' + exchangeName)
     } catch (error) {
-      console.log(error)
+      winstonLogger.error(new RmqError('[RabbitMqEventBus] Error send message to ' + exchangeBaseName))
     }
   }
 }

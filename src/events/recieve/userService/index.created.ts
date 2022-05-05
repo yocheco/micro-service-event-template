@@ -1,6 +1,9 @@
 import amqp from 'amqplib'
 import indexController from '../../../controllers/indexController'
-import { BaseError } from '../../../shared/errors/baseError'
+
+import winstonLogger from '../../../lib/WinstonLogger'
+import { ApiError } from '../../../shared/errors/apiError'
+import { RmqError } from '../../../shared/errors/rmqError'
 
 const connectionRMQ = process.env.connectionRMQ || 'amqp://localhost'
 const exchangeBaseName = process.env.exchangeBaseName || 'houndy.userService.v1.event.'
@@ -18,18 +21,15 @@ class IndexCreatedReciveBus {
     await channel.bindQueue(queue, exchangeName, '')
 
     try {
-      console.log('init consumer')
       await channel.consume(queue, async message => {
-        if (!message) {
-          throw new BaseError('RabbitMqEventBus has not being properly initialized, deserializer is missing')
-        }
+        if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
         await indexController.tetsRMQ(message)
-        channel.ack(message)
+        channel.ack(message!)
+        winstonLogger.info('[RabbitMqEventBus] Message processed:' + queue)
       }, { noAck: false })
-      console.log('finish consumer')
     } catch (error) {
-      console.log(error)
-      console.log('----------------------errorororor--------------')
+      const message = error instanceof ApiError ? error.message : 'Generic error for user'
+      winstonLogger.error(message)
     }
   }
 }

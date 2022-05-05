@@ -6,6 +6,7 @@ import { IApiResponse } from '../shared/interfaces/apiResponse'
 import { HttpStatusCode } from '../shared/types/http.model'
 import { ApiError } from '../shared/errors/apiError'
 import indexBusSend from '../events/send/index/indexBusSend'
+import winstonLogger from '../lib/WinstonLogger'
 
 class IndexController {
   public index = async (req: Request, res: Response, next: NextFunction) => {
@@ -35,6 +36,7 @@ class IndexController {
         code: HttpStatusCode.UNAUTHORIZED,
         message
       }
+      winstonLogger.error(message)
       res.status((<BaseError>err)?.httpCode || 500).send(responseError)
       // next(err)
     }
