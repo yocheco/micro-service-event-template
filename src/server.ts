@@ -10,7 +10,6 @@ import indexRoutes from './routes/index'
 import morgan from 'morgan'
 import SwaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from './lib/swagger'
-import indexCreatedReciveBus from './events/recieve/userService/index.created'
 import winstonLogger from './lib/WinstonLogger'
 
 export class Server {
@@ -50,8 +49,6 @@ export class Server {
 
     // Swagger
     router.use('/doc', SwaggerUi.serve, SwaggerUi.setup(swaggerJSDoc))
-
-    // indexCreatedReciveBus.start()
 
     // Error handling
     router.use((err: Error, req: Request, res: Response, next: Function) => {
