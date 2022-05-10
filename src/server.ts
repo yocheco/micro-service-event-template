@@ -11,6 +11,7 @@ import morgan from 'morgan'
 import SwaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from './lib/swagger'
 import indexCreatedReciveBus from './events/recieve/userService/index.created'
+import winstonLogger from './lib/WinstonLogger'
 
 export class Server {
   private port: string
@@ -63,9 +64,7 @@ export class Server {
   async listen (): Promise<void> {
     return new Promise(resolve => {
       this.httpServer = this.express.listen(this.port, () => {
-        console.log(
-          `Server is running at http://localhost:${this.port} in ${this.express.get('env')} mode`
-        )
+        winstonLogger.info(`Server is running at http://localhost:${this.port} in ${this.express.get('env')} mode`)
         console.log('  Press CTRL-C to stop\n')
         resolve()
       })

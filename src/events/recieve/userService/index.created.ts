@@ -5,22 +5,21 @@ import winstonLogger from '../../../lib/WinstonLogger'
 import { ApiError } from '../../../shared/errors/apiError'
 import { RmqError } from '../../../shared/errors/rmqError'
 
-const connectionRMQ = process.env.connectionRMQ || 'amqp://localhost'
-const exchangeBaseName = process.env.exchangeBaseName || 'houndy.userService.v1.event.'
+const CONNECTION_RMQ = process.env.CONNECTION_RMQ || 'amqp://localhost'
+const EXCHANGE_BASE_NAME = process.env.EXCHANGE_BASE_NAME || 'houndy.userService.v1.event.'
 const eventName = 'index.created'
-const exchangeType = process.env.exchangeType || 'fanout'
-const exchangeName = exchangeBaseName + eventName
+const EXCHANGE_TYPE = process.env.EXCHANGE_TYPE || 'fanout'
+const exchangeName = EXCHANGE_BASE_NAME + eventName
 const queue = 'userService.index.v1.queue.' + eventName
 
 class IndexCreatedReciveBus {
   public start = async () => {
-    const connection = await amqp.connect(connectionRMQ)
-    const channel = await connection.createChannel()
-    await channel.assertQueue(queue)
-    await channel.assertExchange(exchangeName, exchangeType)
-    await channel.bindQueue(queue, exchangeName, '')
-
     try {
+      const connection = await amqp.connect(CONNECTION_RMQ)
+      const channel = await connection.createChannel()
+      await channel.assertQueue(queue)
+      await channel.assertExchange(exchangeName, EXCHANGE_TYPE)
+      await channel.bindQueue(queue, exchangeName, '')
       await channel.consume(queue, async message => {
         if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
         await indexController.tetsRMQ(message)
