@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "NODE_ENV=dev ts-node-dev --ignore-watch node_modules  ./src/start.ts",
-    "test": "NODE_ENV=test jest --verbose --silent"
+    "test": "NODE_ENV=test jest --verbose --silent",
+    "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
   "author": "",

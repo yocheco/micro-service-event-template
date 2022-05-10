@@ -17,6 +17,6 @@ describe('Get /health-check', () => {
   test('should return 200', async () => {
     await request(application.httpServer)
       .get('/health-check')
-      .expect(200)
+      .expect(201)
   })
 })
