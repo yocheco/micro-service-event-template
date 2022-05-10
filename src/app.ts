@@ -1,3 +1,4 @@
+import indexCreatedReciveBus from './events/recieve/userService/index.created'
 import { Server } from './server'
 
 export class App {
@@ -6,6 +7,7 @@ export class App {
   async start () {
     const port = process.env.PORT || '5000'
     this.server = new Server(port)
+    await indexCreatedReciveBus.start()
     return this.server.listen()
   }
 

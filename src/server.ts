@@ -51,7 +51,7 @@ export class Server {
     // Swagger
     router.use('/doc', SwaggerUi.serve, SwaggerUi.setup(swaggerJSDoc))
 
-    indexCreatedReciveBus.start()
+    // indexCreatedReciveBus.start()
 
     // Error handling
     router.use((err: Error, req: Request, res: Response, next: Function) => {

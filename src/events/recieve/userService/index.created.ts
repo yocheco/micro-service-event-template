@@ -27,7 +27,7 @@ class IndexCreatedReciveBus {
         winstonLogger.info('[RabbitMqEventBus] Message processed:' + queue)
       }, { noAck: false })
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : 'Generic error for user'
+      const message = error instanceof ApiError ? error.message : '[RabbitMqEventBus] error to conected..'
       winstonLogger.error(message)
     }
   }
