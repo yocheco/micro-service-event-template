@@ -20,6 +20,7 @@ class IndexCreatedReciveBus {
       await channel.assertQueue(queue)
       await channel.assertExchange(exchangeName, EXCHANGE_TYPE)
       await channel.bindQueue(queue, exchangeName, '')
+      winstonLogger.info('[RabbitMqEventBus] Ready')
       await channel.consume(queue, async message => {
         if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
         await indexController.tetsRMQ(message)

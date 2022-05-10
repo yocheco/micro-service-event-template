@@ -44,10 +44,8 @@ class IndexController {
 
   public tetsRMQ = async (message:any) => {
     try {
-      console.log('init controller')
       const content = JSON.parse(message.content.toString())
       console.log(content)
-      console.log('finish controller')
     } catch (error) {
 
     }

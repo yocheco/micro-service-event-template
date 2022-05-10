@@ -1,4 +1,4 @@
-import winston from 'winston'
+import winston, { format } from 'winston'
 
 export enum Levels {
   DEBUG = 'debug',
@@ -11,10 +11,43 @@ const logger = winston.createLogger({
   format: winston.format.json(),
   defaultMeta: { service: 'user-service' },
   transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: `logs/${Levels.DEBUG}.log`, level: Levels.DEBUG }),
-    new winston.transports.File({ filename: `logs/${Levels.ERROR}.log`, level: Levels.ERROR }),
-    new winston.transports.File({ filename: `logs/${Levels.INFO}.log`, level: Levels.INFO })
+    new winston.transports.Console({
+      format: format.combine(
+        format.timestamp(),
+        format.colorize(),
+        format.simple()
+      )
+    }),
+    new winston.transports.File({
+      filename: `logs/${Levels.DEBUG}.log`,
+      level: Levels.DEBUG,
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD hh:mm:ss A ZZ'
+        }),
+        winston.format.json()
+      )
+    }),
+    new winston.transports.File({
+      filename: `logs/${Levels.ERROR}.log`,
+      level: Levels.ERROR,
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD hh:mm:ss A ZZ'
+        }),
+        winston.format.json()
+      )
+    }),
+    new winston.transports.File({
+      filename: `logs/${Levels.INFO}.log`,
+      level: Levels.INFO,
+      format: winston.format.combine(
+        winston.format.timestamp({
+          format: 'YYYY-MM-DD hh:mm:ss A ZZ'
+        }),
+        winston.format.json()
+      )
+    })
   ]
 })
 
