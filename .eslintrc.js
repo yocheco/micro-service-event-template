@@ -1,8 +1,7 @@
 module.exports = {
   env: {
-    browser: true,
-    es2021: true,
-    node: true
+    node: true,
+    'jest/globals': true
   },
   extends: [
     'standard'
@@ -13,8 +12,20 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: [
-    '@typescript-eslint'
+    '@typescript-eslint',
+    'jest'
+  ],
+  overrides: [
+    {
+      files: ['test/**'],
+      plugins: ['jest'],
+      extends: ['plugin:jest/recommended'],
+      rules: { 'jest/prefer-expect-assertions': 'on' }
+
+    }
   ],
   rules: {
+    
+
   }
 }

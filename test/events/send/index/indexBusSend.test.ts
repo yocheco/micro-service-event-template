@@ -1,22 +1,35 @@
-import request from 'supertest'
-import { App } from '../../../../src/app'
+/* eslint-disable no-unused-vars */
+/* eslint-disable global-require */
+import '@types/jest'
 
-let application: App
+import { describe, expect, test } from '@jest/globals'
+
+import { IMessageBus } from '../../../../../userService/src/shared/interfaces/messageBus'
+import { IDataBus } from '../../../../src/shared/interfaces/messageBus';
+
+const message: IMessageBus = {
+  data: {
+    id: 'sssss',
+    occurred: new Date('December 17, 1995 03:24:00'),
+    type: '',
+    attributes: {
+      index: ''
+    }
+  }
+}
+
 
 beforeEach(async () => {
-  application = new App()
-  await application.start()
+
 })
 
 afterEach(async () => {
-  await application.stop()
+
 })
 
-// eslint-disable-next-line no-undef
-describe('Get /health-check', () => {
-  test('should return 200', async () => {
-    await request(application.httpServer)
-      .get('/health-check')
-      .expect(201)
+
+describe('Message Broker Connection in index bus send', () => {
+  test('should connect to RMQ', () => {
+
   })
 })

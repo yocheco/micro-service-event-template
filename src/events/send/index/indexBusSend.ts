@@ -20,7 +20,7 @@ class IndexBusSend {
 
       channel.assertExchange(exchangeName, EXCHANGE_TYPE, { durable: true })
 
-      const indexDemo:Iindex = { name: 'Hola' }
+      const indexDemo: Iindex = { name: 'Hola' }
 
       const message: IMessageBus = {
         data: {
