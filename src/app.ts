@@ -8,7 +8,8 @@ export class App {
   async start () {
     const port = Env.PORT
     this.server = new Server(port)
-    await indexCreatedReciveBus.start()
+    // Index created
+    if(Env.NODE_ENV !== 'test') await indexCreatedReciveBus.start()
     return this.server.listen()
   }
 

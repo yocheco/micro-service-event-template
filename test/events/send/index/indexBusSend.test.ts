@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable global-require */
-import '@types/jest'
+
 
 import { describe, expect, test } from '@jest/globals'
 
