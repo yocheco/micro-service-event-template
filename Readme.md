@@ -1,5 +1,5 @@
 <a href="https://github.com/yocheco/micro-service-event-template/actions/workflows/test.yml">
-    <img src="https://github.com/yocheco/micro-service-event-template/actions/workflows/badge.svg" />
+    <img src="https://github.com/yocheco/micro-service-event-template/actions/workflows/test.yml/badge.svg" />
 </a>
 
 ## Errors
