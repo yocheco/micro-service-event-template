@@ -4,21 +4,19 @@ import indexController from '../../../controllers/indexController'
 import winstonLogger from '../../../lib/WinstonLogger'
 import { ApiError } from '../../../shared/errors/apiError'
 import { RmqError } from '../../../shared/errors/rmqError'
+import { Env } from '../../../config/env'
 
-const CONNECTION_RMQ = process.env.CONNECTION_RMQ || 'amqp://localhost'
-const EXCHANGE_BASE_NAME = process.env.EXCHANGE_BASE_NAME || 'houndy.userService.v1.event.'
 const eventName = 'index.created'
-const EXCHANGE_TYPE = process.env.EXCHANGE_TYPE || 'fanout'
-const exchangeName = EXCHANGE_BASE_NAME + eventName
 const queue = 'userService.index.v1.queue.' + eventName
+const exchangeName = Env.EXCHANGE_BASE_NAME + eventName
 
 class IndexCreatedReciveBus {
   public start = async () => {
     try {
-      const connection = await amqp.connect(CONNECTION_RMQ)
+      const connection = await amqp.connect(Env.CONNECTION_RMQ)
       const channel = await connection.createChannel()
       await channel.assertQueue(queue)
-      await channel.assertExchange(exchangeName, EXCHANGE_TYPE)
+      await channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE)
       await channel.bindQueue(queue, exchangeName, '')
       winstonLogger.info('[RabbitMqEventBus] Ready')
       await channel.consume(queue, async message => {
