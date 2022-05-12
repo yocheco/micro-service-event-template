@@ -1,3 +1,7 @@
+<a href="https://github.com/yocheco/micro-service-event-template/actions/workflows/test.yml">
+    <img src="https://github.com/yocheco/micro-service-event-template/actions/workflows/badge.svg" />
+</a>
+
 ## Errors
 throw new APIError(errMessage, 'saveInDB', HttpStatusCode.ALREADY_EXISTS)
 throw new BaseError('Could not perform async operation', err, 'saveInDB')
