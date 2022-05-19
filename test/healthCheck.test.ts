@@ -12,10 +12,6 @@ let application: App
 const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, 'info')
 winstonLoggerInfoSpy.mockImplementation(mockInfo)
 
-// error
-const winstonLoggerErrorSpy = jest.spyOn(winstonLogger, 'error')
-winstonLoggerErrorSpy.mockImplementation(mockError)
-
 beforeEach(async () => {
   application = new App()
   await application.start()
@@ -37,6 +33,6 @@ describe('Get /health-check', () => {
   test('should return 200', async () => {
     await request(application.httpServer)
       .get('/health-check')
-      .expect(200)    
+      .expect(200)
   })
 })
