@@ -1,5 +1,3 @@
-
-import { describe, expect, test, beforeEach, afterEach, jest } from '@jest/globals'
 import amqp from 'amqplib';
 import { Env } from '../../../../src/config/env'
 import indexBusSend from '../../../../src/events/send/index/indexBusSend'

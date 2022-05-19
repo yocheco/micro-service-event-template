@@ -1,11 +1,6 @@
 module.exports = {
-  env: {
-    node: true,
-    'jest/globals': true
-  },
-  extends: [
-    'standard'
-  ],
+  env: {node: true},
+  extends: ['standard'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 12,
@@ -17,6 +12,7 @@ module.exports = {
   ],
   overrides: [
     {
+      env: {'jest/globals': true},
       files: ['test/**'],
       plugins: ['jest'],
       extends: ['plugin:jest/recommended'],
@@ -24,8 +20,5 @@ module.exports = {
 
     }
   ],
-  rules: {
-    
-
-  }
+  rules: {}
 }
