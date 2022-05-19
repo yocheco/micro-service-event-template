@@ -1,0 +1,9 @@
+jest.mock('amqplib', () => ({
+  connect: jest.fn((url) => Promise.resolve({
+    createChannel: jest.fn(() => Promise.resolve({
+      assertExchange: jest.fn(),
+      publish: jest.fn(),
+    })),
+    close: jest.fn(),
+  })),
+}));

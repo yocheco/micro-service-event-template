@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.15, 18.x]
+        rabbitmq-version: ['3.8.2-management-alpine']
 
     steps:
       - uses: actions/checkout@v3
@@ -18,6 +19,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: 🐰 Launch RabbitMQ
+        uses: nijel/rabbitmq-action@v1.0.0
+        with:
+          rabbitmq version: ${{ matrix.rabbitmq-version }}
+          
       - name: 🔧 Install dependencies npm
         run: |
           npm install

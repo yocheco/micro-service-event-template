@@ -52,15 +52,15 @@ const logger = winston.createLogger({
 })
 
 class WinstonLogger {
-  debug (message: string) {
+  debug (message: string): void  {
     logger.debug(message)
   }
 
-  error (message: string | Error) {
+  error (message: string | Error): void  {
     logger.error(message)
   }
 
-  info (message: string) {
+  info (message: string): void {
     logger.info(message)
   }
 }
