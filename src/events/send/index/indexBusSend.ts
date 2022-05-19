@@ -32,6 +32,7 @@ class IndexBusSend {
 
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
       winstonLogger.info('[RabbitMqEventBus] Message send to: ' + exchangeName)
+      await connection.close()
     } catch (error) {
       winstonLogger.error(new RmqError('[RabbitMqEventBus] Error send message to ' + Env.EXCHANGE_BASE_NAME))
     }
