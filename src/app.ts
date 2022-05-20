@@ -8,7 +8,7 @@ export class App {
   async start () {
     const port = Env.PORT
     this.server = new Server(port)
-    // Index created
+    // Index created start
     if(Env.NODE_ENV !== 'test') await indexCreatedReciveBus.start()
     return this.server.listen()
   }
@@ -18,6 +18,7 @@ export class App {
   }
 
   async stop () {
+    // Index created stop
     if(Env.NODE_ENV !== 'test') await indexCreatedReciveBus.stop()
     return this.server?.stop()
   }
