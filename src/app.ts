@@ -18,6 +18,7 @@ export class App {
   }
 
   async stop () {
+    if(Env.NODE_ENV !== 'test') await indexCreatedReciveBus.stop()
     return this.server?.stop()
   }
 }
