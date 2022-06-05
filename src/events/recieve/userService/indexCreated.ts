@@ -3,9 +3,11 @@ import amqp, { Channel, Connection } from 'amqplib'
 import { Env } from '../../../config/env'
 import indexController from '../../../controllers/indexController'
 import winstonLogger from '../../../lib/WinstonLogger'
+import { Iindex } from '../../../models'
 import { ApiError } from '../../../shared/errors/apiError'
 import { RmqError } from '../../../shared/errors/rmqError'
 import { HttpStatusCode } from '../../../shared/types/http.model'
+import { deserializeMessage } from '../../shared/serializeMessage'
 
 export const eventName = 'index.created'
 export const queue = 'userService.index.v1.queue.' + eventName
@@ -34,7 +36,10 @@ class IndexCreatedReciveBus {
 
       await channel.consume(queue, async message => {
         if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
-        await indexController.reciveRMQ(message)
+
+        const index = await deserializeMessage<Iindex>(message!)
+
+        indexController.reciveRMQ(index)
         channel.ack(message!)
         winstonLogger.info('[IndexCreatedReciveBus] Message processed:' + queue)
       }, { noAck: false })
@@ -45,7 +50,7 @@ class IndexCreatedReciveBus {
 
   public stop = async (): Promise<void> => {
     try {
-      await connection.close()
+      await connection?.close()
     } catch (error) {
       const message = error instanceof ApiError ? error.message : '[RabbitMqEventBus] error to desconnect..'
       winstonLogger.error(message)

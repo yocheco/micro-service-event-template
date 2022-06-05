@@ -1,12 +1,12 @@
 
-export interface IDataBus{
+export interface IDataBus<T>{
   id: string
   type: string
   occurred: Date
-  attributes: any
+  attributes: T
 }
 
-export interface IMessageBus{
-  data: IDataBus
+export interface IMessageBus<T>{
+  data: IDataBus<T>
   meta?: any
 }

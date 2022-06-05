@@ -34,14 +34,12 @@ class IndexBusSend {
       const exchangeName = Env.EXCHANGE_BASE_NAME + 'index.created'
       channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE, { durable: true })
       const indexDemo: Iindex = { name: 'Hola' }
-      const message: IMessageBus = {
+      const message: IMessageBus<Iindex> = {
         data: {
           id: 'sssss',
           occurred: new Date(),
           type: exchangeName,
-          attributes: {
-            index: indexDemo
-          }
+          attributes: indexDemo
         }
       }
 

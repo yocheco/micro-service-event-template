@@ -43,14 +43,8 @@ class IndexController {
     }
   }
 
-  public reciveRMQ = async (message:any) => {
-    try {
-      const content = JSON.parse(message.content.toString())
-      // eslint-disable-next-line no-console
-      console.log(content)
-    } catch (error) {
-
-    }
+  public reciveRMQ = (index:Iindex) => {
+    console.log({ index })
   }
 }
 
