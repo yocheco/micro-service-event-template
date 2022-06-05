@@ -16,7 +16,6 @@ const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, 'info')
 winstonLoggerInfoSpy.mockImplementation(mockInfo)
 
 const exchangeName = Env.EXCHANGE_BASE_NAME + 'index.created'
-const connectionUrl = Env.CONNECTION_RMQ
 
 const user: Iindex = {
   name: 'test'
@@ -50,7 +49,7 @@ describe('Message Broker index bus send', () => {
 
   test('should call error', async () => {
     // Send rmq user valid and invalid url to connection
-    expect(indexBusSend.userAdd(user, 'amqp://localhost2')).rejects.toThrow(RmqError)
+    await expect(indexBusSend.userAdd(user, 'amqp://localhost2')).rejects.toThrow(RmqError)
     await indexBusSend.closeConnection()
   })
 })
