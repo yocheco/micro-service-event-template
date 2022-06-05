@@ -9,6 +9,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'simple-import-sort', 'import', 'jest'],
   rules: {
     'no-console': ['error', { allow: ['error'] }],
+    'no-var': 'error',
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
     'import/first': 'error',
