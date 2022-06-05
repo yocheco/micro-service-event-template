@@ -1,22 +1,32 @@
-import amqp, { Connection } from 'amqplib'
+import amqp, { Channel, Connection } from 'amqplib'
 
 import { Env } from '../../../config/env'
 import indexController from '../../../controllers/indexController'
 import winstonLogger from '../../../lib/WinstonLogger'
 import { ApiError } from '../../../shared/errors/apiError'
 import { RmqError } from '../../../shared/errors/rmqError'
+import { HttpStatusCode } from '../../../shared/types/http.model'
 
-const eventName = 'index.created'
-const queue = 'userService.index.v1.queue.' + eventName
-const exchangeName = Env.EXCHANGE_BASE_NAME + eventName
+export const eventName = 'index.created'
+export const queue = 'userService.index.v1.queue.' + eventName
+export const exchangeName = Env.EXCHANGE_BASE_NAME + eventName
 
 let connection: Connection
+let channel: Channel
 
 class IndexCreatedReciveBus {
-  public start = async () => {
+  private connectionRmq = async (url: string) => {
     try {
-      connection = await amqp.connect(Env.CONNECTION_RMQ)
-      const channel = await connection.createChannel()
+      connection = await amqp.connect(url)
+      channel = await connection.createChannel()
+    } catch (error) {
+      throw new RmqError('[IndexCreatedReciveBus] Error connection', 'connectionRmq', HttpStatusCode.NOT_FOUND, true)
+    }
+  }
+
+  public start = async (url: string = Env.CONNECTION_RMQ): Promise<void> => {
+    await this.connectionRmq(url)
+    try {
       await channel.assertQueue(queue)
       await channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE)
       await channel.bindQueue(queue, exchangeName, '')
@@ -26,15 +36,14 @@ class IndexCreatedReciveBus {
         if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
         await indexController.tetsRMQ(message)
         channel.ack(message!)
-        winstonLogger.info('[RabbitMqEventBus] Message processed:' + queue)
+        winstonLogger.info('[IndexCreatedReciveBus] Message processed:' + queue)
       }, { noAck: false })
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : '[RabbitMqEventBus] error to conected..'
-      winstonLogger.error(message)
+      throw new RmqError('[IndexCreatedReciveBus] Error consume', 'start', HttpStatusCode.NOT_FOUND, true)
     }
   }
 
-  public stop = async () => {
+  public stop = async (): Promise<void> => {
     try {
       await connection.close()
     } catch (error) {
