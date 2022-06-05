@@ -1,9 +1,10 @@
-import indexCreatedReciveBus from '../../../../src/events/recieve/userService/indexCreated';
-import amqp from 'amqplib';
-import winstonLogger from '../../../../src/lib/WinstonLogger';
-import { mockError, mockInfo } from '../../../shared/mockWinstonLogger';
-import { Env } from '../../../../src/config/env';
-import testRmq from '../../shared/TestRmq';
+import amqp from 'amqplib'
+
+import { Env } from '../../../../src/config/env'
+import indexCreatedReciveBus from '../../../../src/events/recieve/userService/indexCreated'
+import winstonLogger from '../../../../src/lib/WinstonLogger'
+import { mockError, mockInfo } from '../../../shared/mockWinstonLogger'
+import testRmq from '../../shared/TestRmq'
 
 // info
 const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, 'info')
@@ -37,11 +38,10 @@ afterEach(async () => {
   testRmq.clearRmq(exchangeName, queue)
 })
 
-
 describe('Message Broker index bus reciver', () => {
   test('should connect to RMQ', async () => {
     expect(connectSpy).toBeCalledTimes(1)
     expect(mockInfo).toBeCalledTimes(1)
     expect(mockError).not.toHaveBeenCalled()
-  });
-});
+  })
+})

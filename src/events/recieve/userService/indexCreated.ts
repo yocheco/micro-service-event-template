@@ -1,11 +1,10 @@
 import amqp, { Connection } from 'amqplib'
-import indexController from '../../../controllers/indexController'
 
+import { Env } from '../../../config/env'
+import indexController from '../../../controllers/indexController'
 import winstonLogger from '../../../lib/WinstonLogger'
 import { ApiError } from '../../../shared/errors/apiError'
 import { RmqError } from '../../../shared/errors/rmqError'
-import { Env } from '../../../config/env'
-import { IMessageBus } from '../../../shared/interfaces/messageBus'
 
 const eventName = 'index.created'
 const queue = 'userService.index.v1.queue.' + eventName
@@ -22,7 +21,7 @@ class IndexCreatedReciveBus {
       await channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE)
       await channel.bindQueue(queue, exchangeName, '')
       winstonLogger.info('[RabbitMqEventBus] Ready')
-      
+
       await channel.consume(queue, async message => {
         if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
         await indexController.tetsRMQ(message)

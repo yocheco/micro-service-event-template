@@ -1,14 +1,15 @@
 
-import amqp from 'amqplib';
+import amqp from 'amqplib'
+
 import { Env } from '../../../../src/config/env'
 import indexBusSend from '../../../../src/events/send/index/indexBusSend'
+import winstonLogger from '../../../../src/lib/WinstonLogger'
 import { Iindex } from '../../../../src/models'
+import { RmqError } from '../../../../src/shared/errors/rmqError'
+import { mockInfo } from '../../../shared/mockWinstonLogger'
+import testRmq from '../../shared/TestRmq'
 
 jest.mock('../../../../src/lib/WinstonLogger')
-import winstonLogger from '../../../../src/lib/WinstonLogger'
-import { mockInfo, mockError } from '../../../shared/mockWinstonLogger';
-import testRmq from '../../shared/TestRmq';
-import { RmqError } from '../../../../src/shared/errors/rmqError';
 
 // info
 const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, 'info')
@@ -18,13 +19,13 @@ const exchangeName = Env.EXCHANGE_BASE_NAME + 'index.created'
 const connectionUrl = Env.CONNECTION_RMQ
 
 const user: Iindex = {
- name:'test'
+  name: 'test'
 }
 const connectSpy = jest.spyOn(amqp, 'connect')
 
 // antes
 beforeEach(async () => {
-  
+
 })
 
 // despues
@@ -47,7 +48,7 @@ describe('Message Broker index bus send', () => {
     expect(mockInfo).toBeCalledTimes(1)
   })
 
-  test('should call error', async() => {
+  test('should call error', async () => {
     // Send rmq user valid and invalid url to connection
     expect(indexBusSend.userAdd(user, 'amqp://localhost2')).rejects.toThrow(RmqError)
     await indexBusSend.closeConnection()

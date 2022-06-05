@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
+
+import indexBusSend from '../events/send/index/indexBusSend'
+import winstonLogger from '../lib/WinstonLogger'
 import { Iindex } from '../models'
+import { ApiError } from '../shared/errors/apiError'
 import { BaseError } from '../shared/errors/baseError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'
 import { HttpStatusCode } from '../shared/types/http.model'
-import { ApiError } from '../shared/errors/apiError'
-import indexBusSend from '../events/send/index/indexBusSend'
-import winstonLogger from '../lib/WinstonLogger'
 
 class IndexController {
   public index = async (req: Request, res: Response, next: NextFunction) => {
