@@ -43,7 +43,7 @@ class IndexController {
     }
   }
 
-  public tetsRMQ = async (message:any) => {
+  public reciveRMQ = async (message:any) => {
     try {
       const content = JSON.parse(message.content.toString())
       console.log(content)

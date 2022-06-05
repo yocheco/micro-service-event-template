@@ -34,7 +34,7 @@ class IndexCreatedReciveBus {
 
       await channel.consume(queue, async message => {
         if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
-        await indexController.tetsRMQ(message)
+        await indexController.reciveRMQ(message)
         channel.ack(message!)
         winstonLogger.info('[IndexCreatedReciveBus] Message processed:' + queue)
       }, { noAck: false })
