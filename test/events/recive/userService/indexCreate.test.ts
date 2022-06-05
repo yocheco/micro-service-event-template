@@ -1,4 +1,4 @@
-import indexCreatedReciveBus from '../../../../src/events/recieve/userService/index.created';
+import indexCreatedReciveBus from '../../../../src/events/recieve/userService/indexCreated';
 import amqp from 'amqplib';
 import winstonLogger from '../../../../src/lib/WinstonLogger';
 import { mockError, mockInfo } from '../../../shared/mockWinstonLogger';

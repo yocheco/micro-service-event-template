@@ -1,5 +1,5 @@
 import { Env } from './config/env'
-import indexCreatedReciveBus from './events/recieve/userService/index.created'
+import indexCreatedReciveBus from './events/recieve/userService/indexCreated'
 import { Server } from './server'
 
 export class App {
