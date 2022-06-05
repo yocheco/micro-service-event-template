@@ -7,14 +7,12 @@ import { Iindex } from '../../../../src/models'
 jest.mock('../../../../src/lib/WinstonLogger')
 import winstonLogger from '../../../../src/lib/WinstonLogger'
 import { mockInfo, mockError } from '../../../shared/mockWinstonLogger';
+import testRmq from '../../shared/TestRmq';
+import { RmqError } from '../../../../src/shared/errors/rmqError';
 
 // info
 const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, 'info')
 winstonLoggerInfoSpy.mockImplementation(mockInfo)
-
-// error
-const winstonLoggerErrorSpy = jest.spyOn(winstonLogger, 'error')
-winstonLoggerErrorSpy.mockImplementation(mockError)
 
 const exchangeName = Env.EXCHANGE_BASE_NAME + 'index.created'
 const connectionUrl = Env.CONNECTION_RMQ
@@ -22,47 +20,36 @@ const connectionUrl = Env.CONNECTION_RMQ
 const user: Iindex = {
  name:'test'
 }
+const connectSpy = jest.spyOn(amqp, 'connect')
 
 // antes
 beforeEach(async () => {
-  const connection = await amqp.connect(Env.CONNECTION_RMQ)
-  const channel = await connection.createChannel()
-  await channel.deleteExchange(exchangeName)
-  connection.close()
+  
+})
+
+// despues
+afterEach(async () => {
+  // Clear RMQ
+  testRmq.clearRmq(exchangeName)
 
   // Clear mock legger
-  mockError.mockClear()
   mockInfo.mockClear()
 })
 
 describe('Message Broker index bus send', () => {
   test('should connect to RMQ', async () => {
-    const connectSpy = jest.spyOn(amqp, 'connect')
+    // Send rmq user valid
     await indexBusSend.userAdd(user)
+    await indexBusSend.closeConnection()
+
     expect(connectSpy).toBeCalledTimes(1)
     expect(connectSpy).toBeCalledWith(Env.CONNECTION_RMQ)
+    expect(mockInfo).toBeCalledTimes(1)
   })
 
-  test('should no Error', async() => {
-    await indexBusSend.userAdd(user)
-    expect(mockError).not.toHaveBeenCalled()
-  });
-  
-  test('should call loger info to ok send to RMQ', async() => {
-    await indexBusSend.userAdd(user)
-    expect(mockInfo).toBeCalledTimes(1)
-  });
-})
-
-
-// despues
-afterEach(async () => {
-  const connection = await amqp.connect(Env.CONNECTION_RMQ)
-  const channel = await connection.createChannel()
-  await channel.deleteExchange(exchangeName)
-  connection.close()
-
-  // Clear mock legger
-  mockError.mockClear()
-  mockInfo.mockClear()
+  test('should call error', async() => {
+    // Send rmq user valid and invalid url to connection
+    expect(indexBusSend.userAdd(user, 'amqp://localhost2')).rejects.toThrow(RmqError)
+    await indexBusSend.closeConnection()
+  })
 })

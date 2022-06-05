@@ -1,24 +1,40 @@
 import { Iindex } from '../../../models'
-import amqp from 'amqplib'
+import amqp, { Channel, Connection }from 'amqplib'
 import { IMessageBus } from '../../../shared/interfaces/messageBus'
 import winstonLogger from '../../../lib/WinstonLogger'
 import { RmqError } from '../../../shared/errors/rmqError'
 import { Env } from '../../../config/env'
+import { HttpStatusCode } from '../../../shared/types/http.model';
 
+let connection: Connection
+let channel: Channel
 class IndexBusSend {
-  public userAdd = async (user: Iindex) => {
+
+  private connectionRmq = async (url: string | amqp.Options.Connect, socketOptions?: any) => {
     try {
-      if (!user) {
-        winstonLogger.error(new RmqError('Sould send a valid user to message queue'))
-      }
-      const connection = await amqp.connect(Env.CONNECTION_RMQ)
+      connection = await amqp.connect(url)
+      channel = await connection.createChannel()
+
+    } catch (error) {
+      throw new RmqError('[IndexBusSend] Error connection', 'connectionRmq', HttpStatusCode.NOT_FOUND, true);
+    }
+  }
+
+  public closeConnection = async () => {
+    connection?.close()
+  }
+  
+  public userAdd = async (user: Iindex, url: string = Env.CONNECTION_RMQ) => {
+    if (!user) {
+      throw new RmqError('[IndexBusSend] Sould send a valid user to message queue', 'userAdd', HttpStatusCode.BAD_REQUEST, true);
+    } 
+
+    await this.connectionRmq(url)
+    
+    try {
       const exchangeName = Env.EXCHANGE_BASE_NAME + 'index.created'
-      const channel = await connection.createChannel()
-
       channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE, { durable: true })
-
       const indexDemo: Iindex = { name: 'Hola' }
-
       const message: IMessageBus = {
         data: {
           id: 'sssss',
@@ -32,9 +48,9 @@ class IndexBusSend {
 
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
       winstonLogger.info('[RabbitMqEventBus] Message send to: ' + exchangeName)
-      await connection.close()
+      
     } catch (error) {
-      winstonLogger.error(new RmqError('[RabbitMqEventBus] Error send message to ' + Env.EXCHANGE_BASE_NAME))
+      throw new RmqError('[IndexBusSend] Error send message to RMQ', 'userAdd', HttpStatusCode.INTERNAL_SERVER, true);
     }
   }
 }

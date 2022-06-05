@@ -5,6 +5,7 @@ import winstonLogger from '../../../lib/WinstonLogger'
 import { ApiError } from '../../../shared/errors/apiError'
 import { RmqError } from '../../../shared/errors/rmqError'
 import { Env } from '../../../config/env'
+import { IMessageBus } from '../../../shared/interfaces/messageBus'
 
 const eventName = 'index.created'
 const queue = 'userService.index.v1.queue.' + eventName

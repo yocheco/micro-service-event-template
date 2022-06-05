@@ -3,6 +3,7 @@ import amqp from 'amqplib';
 import winstonLogger from '../../../../src/lib/WinstonLogger';
 import { mockError, mockInfo } from '../../../shared/mockWinstonLogger';
 import { Env } from '../../../../src/config/env';
+import testRmq from '../../shared/TestRmq';
 
 // info
 const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, 'info')
@@ -30,14 +31,10 @@ afterEach(async () => {
   // Clear mock legger
   mockInfo.mockClear()
   connectSpy.mockClear()
+  mockError.mockClear()
 
   // Clear RMQ
-  const connection = await amqp.connect(Env.CONNECTION_RMQ)
-  const channel = await connection.createChannel()
-
-  await channel.deleteQueue(queue)
-  await channel.deleteExchange(exchangeName)
-  connection.close()
+  testRmq.clearRmq(exchangeName, queue)
 })
 
 
