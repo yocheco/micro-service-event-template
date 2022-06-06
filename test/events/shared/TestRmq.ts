@@ -11,7 +11,7 @@ let channel : Channel
 class TestRmq {
   private async connectionRmq () {
     connection = await amqp.connect(Env.CONNECTION_RMQ)
-    channel = await connection.createChannel()
+    channel = await connection.createConfirmChannel()
   }
 
   public async closeConnection () {
@@ -35,7 +35,6 @@ class TestRmq {
       await channel.bindQueue(queue, exchangeName, '')
 
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
-      return
     } catch (error) {
       throw new RmqError('[TestRmq] Error test send message', 'start', HttpStatusCode.NOT_FOUND, true)
     }
