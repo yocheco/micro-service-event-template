@@ -4,7 +4,7 @@ import { Env } from '../../../config/env'
 import indexController from '../../../controllers/indexController'
 import winstonLogger from '../../../lib/WinstonLogger'
 import { Iindex } from '../../../models'
-import { ApiError } from '../../../shared/errors/apiError'
+import { BaseError } from '../../../shared/errors/baseError'
 import { RmqError } from '../../../shared/errors/rmqError'
 import { HttpStatusCode } from '../../../shared/types/http.model'
 import { deserializeMessage } from '../../shared/serializeMessage'
@@ -35,7 +35,7 @@ class IndexCreatedReciveBus {
       winstonLogger.info('[RabbitMqEventBus] Ready')
 
       await channel.consume(queue, async message => {
-        if (!message) winstonLogger.error(new RmqError('[RabbitMqEventBus] Sould send a valid message'))
+        if (!message) winstonLogger.error(new RmqError('[IndexCreatedReciveBus] Sould send a valid message'))
 
         const index = await deserializeMessage<Iindex>(message!)
 
@@ -44,7 +44,8 @@ class IndexCreatedReciveBus {
         winstonLogger.info('[IndexCreatedReciveBus] Message processed:' + queue)
       }, { noAck: false })
     } catch (error) {
-      throw new RmqError('[IndexCreatedReciveBus] Error consume', 'start', HttpStatusCode.NOT_FOUND, true)
+      const message = error instanceof BaseError ? error.message : '[IndexCreatedReciveBus] error to consume..'
+      winstonLogger.error(new RmqError(message + ' Error consume', 'start', HttpStatusCode.NOT_FOUND, true))
     }
   }
 
@@ -52,7 +53,7 @@ class IndexCreatedReciveBus {
     try {
       await connection?.close()
     } catch (error) {
-      const message = error instanceof ApiError ? error.message : '[RabbitMqEventBus] error to desconnect..'
+      const message = error instanceof BaseError ? error.message : '[IndexCreatedReciveBus] error to desconnect..'
       winstonLogger.error(message)
     }
   }

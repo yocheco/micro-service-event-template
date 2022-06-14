@@ -4,7 +4,7 @@ import { Env } from '../../../config/env'
 import winstonLogger from '../../../lib/WinstonLogger'
 import { Iindex } from '../../../models'
 import { RmqError } from '../../../shared/errors/rmqError'
-import { IMessageBus } from '../../../shared/interfaces/messageBus'
+import { IMessageBus } from '../../../shared/interfaces/rmq/messageBus'
 import { HttpStatusCode } from '../../../shared/types/http.model'
 
 let connection: Connection

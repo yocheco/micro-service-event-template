@@ -4,7 +4,7 @@ import indexCreatedReciveBus, { exchangeName, queue } from '../../../../src/even
 import winstonLogger from '../../../../src/lib/WinstonLogger'
 import { Iindex } from '../../../../src/models'
 import { RmqError } from '../../../../src/shared/errors/rmqError'
-import { IMessageBus } from '../../../../src/shared/interfaces/messageBus'
+import { IMessageBus } from '../../../../src/shared/interfaces/rmq/messageBus'
 import { mockInfo } from '../../../shared/mockWinstonLogger'
 import testRmq from '../../shared/TestRmq'
 
@@ -15,7 +15,6 @@ winstonLoggerInfoSpy.mockImplementation(mockInfo)
 const connectSpy = jest.spyOn(amqp, 'connect')
 
 // message
-
 const indexDemo: Iindex = { name: 'Hola' }
 const message: IMessageBus<Iindex> = {
   data: {
@@ -26,9 +25,30 @@ const message: IMessageBus<Iindex> = {
   }
 }
 
+// message error
+
+// export interface Ierror{
+//   error: boolean,
+//   test: boolean
+// }
+
+// const messageError: IMessageBus<any> = {
+//   data: {
+//     id: 'sssss',
+//     occurred: new Date(),
+//     type: exchangeName,
+//     attributes: {
+//       error: true,
+//       test: true
+//     }
+//   }
+// }
+
 // antes
 beforeEach(async () => {
-
+  // Clear mock legger
+  mockInfo.mockClear()
+  connectSpy.mockClear()
 })
 
 // Despues
@@ -55,7 +75,7 @@ describe('Message Broker index bus reciver', () => {
   })
 
   test('should recive correct message', async () => {
-    await testRmq.sendMessage(exchangeName, message, queue)
+    await testRmq.sendMessage(exchangeName, message)
     await indexCreatedReciveBus.start()
 
     await testRmq.closeConnection()

@@ -7,9 +7,10 @@ import { Iindex } from '../models'
 import { ApiError } from '../shared/errors/apiError'
 import { BaseError } from '../shared/errors/baseError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'
+import { ISendController } from '../shared/interfaces/rmq/sendRmqController'
 import { HttpStatusCode } from '../shared/types/http.model'
 
-class IndexController {
+class IndexController implements ISendController<Iindex> {
   public index = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Create model index
@@ -43,7 +44,8 @@ class IndexController {
     }
   }
 
-  public reciveRMQ = (index:Iindex) => {
+  public reciveRMQ = (index: Iindex): void => {
+    // eslint-disable-next-line no-console
     console.log({ index })
   }
 }

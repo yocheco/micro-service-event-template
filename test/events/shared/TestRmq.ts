@@ -3,15 +3,19 @@ import amqp, { Channel, Connection } from 'amqplib'
 import { Env } from '../../../src/config/env'
 import { Iindex } from '../../../src/models'
 import { RmqError } from '../../../src/shared/errors/rmqError'
-import { IMessageBus } from '../../../src/shared/interfaces/messageBus'
+import { IMessageBus } from '../../../src/shared/interfaces/rmq/messageBus'
 import { HttpStatusCode } from '../../../src/shared/types/http.model'
 
 let connection : Connection
 let channel : Channel
 class TestRmq {
   private async connectionRmq () {
-    connection = await amqp.connect(Env.CONNECTION_RMQ)
-    channel = await connection.createConfirmChannel()
+    try {
+      connection = await amqp.connect(Env.CONNECTION_RMQ)
+      channel = await connection.createConfirmChannel()
+    } catch (error) {
+
+    }
   }
 
   public async closeConnection () {
@@ -27,13 +31,9 @@ class TestRmq {
     connectionClear?.close()
   }
 
-  public async sendMessage (exchangeName: string, message: IMessageBus<Iindex>, queue: string) {
+  public async sendMessage<T> (exchangeName: string, message: IMessageBus<T>) {
+    await this.connectionRmq()
     try {
-      await this.connectionRmq()
-      await channel.assertQueue(queue)
-      channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE, { durable: true })
-      await channel.bindQueue(queue, exchangeName, '')
-
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
     } catch (error) {
       throw new RmqError('[TestRmq] Error test send message', 'start', HttpStatusCode.NOT_FOUND, true)
