@@ -4,7 +4,7 @@ import amqp from 'amqplib'
 import { ReciveRmq } from '../../../src/events/recieve/reciveRmq'
 import winstonLogger, { Levels } from '../../../src/lib/WinstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
-import { IMockModel, messageError, messageOk } from '../_mocks_/model'
+import { IMockModel, messageOk } from '../_mocks_/model'
 import { sendControllerMock } from '../_mocks_/sendControllerMock'
 import testRmq from '../shared/TestRmq'
 

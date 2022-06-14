@@ -1,5 +1,4 @@
-import { RmqError } from '../../../../userService/src/shared/errors/rmqError'
-import { RmqErrorCastMessage } from '../../../src/shared/errors/rmqError'
+import { RmqError, RmqErrorCastMessage } from '../../../src/shared/errors/rmqError'
 import { ISendController } from '../../../src/shared/interfaces/rmq/sendRmqController'
 import { IMockModel } from './model'
 
