@@ -47,12 +47,12 @@ describe('Message Broker RBQ reciver', () => {
     mockError.mockClear()
 
     // Clear RMQ
-    testRmq.clearRmq(reciveRmq.exchangeName, reciveRmq.queue)
+    await testRmq.clearRmq(reciveRmq.exchangeName, reciveRmq.queue)
   })
 
   test('should connect to RMQ', async () => {
     await reciveRmq.start()
-    await delay(100)
+    await delay(5)
     await reciveRmq.stop()
     expect(connectSpy).toBeCalledTimes(1)
     expect(mockInfo).toBeCalledTimes(1)
@@ -66,7 +66,7 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.start()
     await testRmq.sendMessage<IMockModel>(reciveRmq.exchangeName, messageOk)
 
-    await delay(3000)
+    await delay(5)
 
     await testRmq.closeConnection()
     await reciveRmq.stop()

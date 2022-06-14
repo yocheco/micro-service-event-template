@@ -27,7 +27,7 @@ export class ReciveRmq<T> {
   private connectionRmq = async (url: string) => {
     try {
       connection = await amqp.connect(url)
-      channel = await connection.createChannel()
+      channel = await connection.createConfirmChannel()
     } catch (error) {
       const message = error instanceof Error ? '[ReciveBus] Error connection' + error.message : '[ReciveBus] Error connection'
 
