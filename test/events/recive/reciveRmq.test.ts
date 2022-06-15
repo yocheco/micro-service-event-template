@@ -4,7 +4,7 @@ import amqp from 'amqplib'
 import { ReciveRmq } from '../../../src/events/recieve/reciveRmq'
 import winstonLogger, { Levels } from '../../../src/lib/WinstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
-import { IMockModel, messageOk } from '../_mocks_/model'
+import { IMockModel, messageError, messageOk } from '../_mocks_/model'
 import { sendControllerMock } from '../_mocks_/sendControllerMock'
 import testRmq from '../shared/TestRmq'
 
@@ -75,14 +75,14 @@ describe('Message Broker RBQ reciver', () => {
   })
 
   test('should thwo RmqErrorCastMessage to send incorrect message', async () => {
-    // await reciveRmq.start()
+    await reciveRmq.start()
 
-    // await testRmq.sendMessage<IMockModel>(reciveRmq.exchangeName, messageError)
-    // await delay(3000)
+    await testRmq.sendMessage<IMockModel>(reciveRmq.exchangeName, messageError)
+    await delay(20)
 
-    // await testRmq.closeConnection()
-    // await reciveRmq.stop()
+    await testRmq.closeConnection()
+    await reciveRmq.stop()
 
-    // expect(mockError).toBeCalledTimes(1)
+    expect(mockError).toBeCalledTimes(1)
   })
 })
