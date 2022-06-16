@@ -3,7 +3,6 @@ import amqp, { Channel, Connection } from 'amqplib'
 import { Env } from '../../../src/config/env'
 import { RmqError } from '../../../src/shared/errors/rmqError'
 import { IMessageBus } from '../../../src/shared/interfaces/rmq/messageBus'
-import { HttpStatusCode } from '../../../src/shared/types/http.model'
 
 let connection : Connection
 let channel : Channel
@@ -13,8 +12,7 @@ class TestRmq {
       connection = await amqp.connect(Env.CONNECTION_RMQ)
       channel = await connection.createConfirmChannel()
     } catch (error) {
-      console.log(error)
-      console.log('bugggggg')
+      throw new RmqError('[TestRmq/connectionRmq] Error connect to RMQ')
     }
   }
 
@@ -36,7 +34,7 @@ class TestRmq {
     try {
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
     } catch (error) {
-      throw new RmqError('[TestRmq] Error test send message', 'start', HttpStatusCode.NOT_FOUND, true)
+      throw new RmqError('[TestRmq/sendMessage] Error test send message')
     }
   }
 }

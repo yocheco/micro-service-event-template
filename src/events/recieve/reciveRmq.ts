@@ -2,10 +2,8 @@ import amqp, { Channel, Connection } from 'amqplib'
 
 import { Env } from '../../config/env'
 import winstonLogger from '../../lib/WinstonLogger'
-import { BaseError } from '../../shared/errors/baseError'
 import { RmqError } from '../../shared/errors/rmqError'
 import { ISendController } from '../../shared/interfaces/rmq/sendRmqController'
-import { HttpStatusCode } from '../../shared/types/http.model'
 import { deserializeMessage } from '../shared/serializeMessage'
 
 // export const eventName = 'index.created'
@@ -19,7 +17,7 @@ export class ReciveRmq<T> {
   exchangeName: string
   queue: string
 
-  constructor (eventName: string, queueService: string, public controller: ISendController<T>) {
+  constructor (public eventName: string, queueService: string, public controller: ISendController<T>) {
     this.exchangeName = Env.EXCHANGE_BASE_NAME + eventName
     this.queue = queueService + eventName
   }
@@ -29,9 +27,8 @@ export class ReciveRmq<T> {
       connection = await amqp.connect(url)
       channel = await connection.createConfirmChannel()
     } catch (error) {
-      const message = error instanceof Error ? '[ReciveBus] Error connection' + error.message : '[ReciveBus] Error connection'
-
-      throw new RmqError(message, 'connectionRmq', HttpStatusCode.NOT_FOUND, true)
+      const message = error instanceof Error ? `[ReciveRmq/connectionRmq/${this.eventName}] Error connection: ${error.message}` : `[ReciveBus/${this.eventName}] Error connection`
+      throw new RmqError(message)
     }
   }
 
@@ -41,22 +38,13 @@ export class ReciveRmq<T> {
       await channel.assertQueue(this.queue)
       await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE)
       await channel.bindQueue(this.queue, this.exchangeName, '')
-      winstonLogger.info('[RabbitMqEventBus] Ready')
+      winstonLogger.info(`[ReciveRmq/${this.eventName}] Connected`)
 
-      await channel.consume(this.queue, async message => {
-        if (!message) winstonLogger.error(new RmqError('[IndexCreatedReciveBus] Sould send a valid message'))
-
-        const index = await deserializeMessage<T>(message!)
-
-        await this.controller.reciveRMQ(index)
-
-        channel.ack(message!)
-        winstonLogger.info('[IndexCreatedReciveBus] Message processed:' + this.queue)
-      }, { noAck: false }
-      )
+      // Consume message
+      await channel.consume(this.queue, async message => this.consume(message), { noAck: false })
     } catch (error) {
-      const message = error instanceof BaseError ? error.message : '[IndexCreatedReciveBus] error to consume..'
-      winstonLogger.error(new RmqError(message + ' Error consume', 'start', HttpStatusCode.NOT_FOUND, true))
+      const message = error instanceof Error ? `[ReciveRmq/start/${this.eventName}] Error to consume: ${error.message}` : `[ReciveBus/${this.eventName}] Error to consume`
+      winstonLogger.error(message)
     }
   }
 
@@ -64,7 +52,23 @@ export class ReciveRmq<T> {
     try {
       await connection?.close()
     } catch (error) {
-      const message = error instanceof BaseError ? error.message : '[IndexCreatedReciveBus] error to desconnect..'
+      const message = error instanceof Error ? `[ReciveRmq/stop/${this.eventName}] Error to close connection: ${error.message}` : `[ReciveBus/${this.eventName}] Error to close connection`
+      winstonLogger.error(message)
+    }
+  }
+
+  private consume = async (message: amqp.ConsumeMessage|null) => {
+    try {
+      if (!message) throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error Sould send a valid message`)
+
+      const data = await deserializeMessage<T>(message!)
+
+      await this.controller.reciveRMQ(data)
+
+      channel.ack(message)
+      winstonLogger.info(`[ReciveBus/${this.eventName}] Message processed ${this.queue}`)
+    } catch (error) {
+      const message = error instanceof Error ? `[ReciveRmq/consume/${this.eventName}] Error to close connection: ${error.message}` : `[ReciveBus/${this.eventName}] Error to close connection`
       winstonLogger.error(message)
     }
   }

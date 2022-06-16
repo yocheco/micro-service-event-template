@@ -5,7 +5,6 @@ import indexBusSend from '../events/send/index/indexBusSend'
 import winstonLogger from '../lib/WinstonLogger'
 import { Iindex } from '../models'
 import { ApiError } from '../shared/errors/apiError'
-import { BaseError } from '../shared/errors/baseError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'
 import { ISendController } from '../shared/interfaces/rmq/sendRmqController'
 import { HttpStatusCode } from '../shared/types/http.model'
@@ -19,7 +18,7 @@ class IndexController implements ISendController<Iindex> {
       }
       const n = Math.floor(Math.random() * 10)
 
-      if (n > 5) throw new ApiError('Error Auth no enviado', 'index', HttpStatusCode.UNAUTHORIZED)
+      if (n > 5) throw new ApiError('[IndexController] Error Auth no enviado')
 
       // Send event
       indexBusSend.userAdd(index)
@@ -39,8 +38,7 @@ class IndexController implements ISendController<Iindex> {
         message
       }
       winstonLogger.error(message)
-      res.status((<BaseError>err)?.httpCode || 500).send(responseError)
-      // next(err)
+      res.status(500).send(responseError)
     }
   }
 

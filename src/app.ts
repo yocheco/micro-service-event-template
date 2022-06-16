@@ -1,5 +1,5 @@
 import { Env } from './config/env'
-import indexCreatedReciveBus from './events/recieve/userService/indexCreated'
+import { recivers } from './recivers'
 import { Server } from './server'
 
 export class App {
@@ -9,7 +9,7 @@ export class App {
     const port = Env.PORT
     this.server = new Server(port)
     // Index created start
-    if(Env.NODE_ENV !== 'test') await indexCreatedReciveBus.start()
+    if (Env.NODE_ENV !== 'test') await recivers.start()
     return this.server.listen()
   }
 
@@ -19,7 +19,7 @@ export class App {
 
   async stop () {
     // Index created stop
-    if(Env.NODE_ENV !== 'test') await indexCreatedReciveBus.stop()
+    if (Env.NODE_ENV !== 'test') await recivers.stop()
     return this.server?.stop()
   }
 }

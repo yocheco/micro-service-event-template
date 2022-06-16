@@ -84,5 +84,6 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.stop()
 
     expect(mockError).toBeCalledTimes(1)
+    expect(mockInfo).toBeCalledTimes(1)
   })
 })
