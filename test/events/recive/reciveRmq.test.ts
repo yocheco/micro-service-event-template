@@ -16,7 +16,7 @@ winstonLoggerInfoSpy.mockImplementation(mockInfo)
 const winstonLoggerErrorSpy = jest.spyOn(winstonLogger, Levels.ERROR)
 winstonLoggerErrorSpy.mockImplementation(mockError)
 
-// amqp mock
+// amqp Spy
 const connectSpy = jest.spyOn(amqp, 'connect')
 
 // Config rmq reciver

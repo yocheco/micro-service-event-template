@@ -24,7 +24,7 @@ new Message
     id: event.eventId,
     attributes: {
       'id': 'id del recurso',
-      'user':{ user }
+      'user':{ user } // Generic type
     }
   },
   meta: {}
