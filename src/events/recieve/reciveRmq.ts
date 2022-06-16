@@ -14,11 +14,11 @@ let connection: Connection
 let channel: Channel
 
 export class ReciveRmq<T> {
-  exchangeName: string
+  public exchangeName: string
   queue: string
 
-  constructor (public eventName: string, queueService: string, public controller: ISendController<T>) {
-    this.exchangeName = Env.EXCHANGE_BASE_NAME + eventName
+  constructor (exchangeBaseName: string, public eventName: string, queueService: string, public controller: ISendController<T>) {
+    this.exchangeName = exchangeBaseName + eventName
     this.queue = queueService + eventName
   }
 
@@ -27,7 +27,9 @@ export class ReciveRmq<T> {
       connection = await amqp.connect(url)
       channel = await connection.createConfirmChannel()
     } catch (error) {
-      const message = error instanceof Error ? `[ReciveRmq/connectionRmq/${this.eventName}] Error connection: ${error.message}` : `[ReciveBus/${this.eventName}] Error connection`
+      const message = error instanceof Error
+        ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
+        : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
       throw new RmqError(message)
     }
   }
@@ -38,12 +40,14 @@ export class ReciveRmq<T> {
       await channel.assertQueue(this.queue)
       await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE)
       await channel.bindQueue(this.queue, this.exchangeName, '')
-      winstonLogger.info(`[ReciveRmq/${this.eventName}] Connected`)
+      winstonLogger.info(`[ReciveRmq/connection => ${this.exchangeName}] Connected`)
 
       // Consume message
       await channel.consume(this.queue, async message => this.consume(message), { noAck: false })
     } catch (error) {
-      const message = error instanceof Error ? `[ReciveRmq/start/${this.eventName}] Error to consume: ${error.message}` : `[ReciveBus/${this.eventName}] Error to consume`
+      const message = error instanceof Error
+        ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
+        : `[ReciveRmq/start => ${this.exchangeName}] Error to start`
       winstonLogger.error(message)
     }
   }
@@ -52,7 +56,9 @@ export class ReciveRmq<T> {
     try {
       await connection?.close()
     } catch (error) {
-      const message = error instanceof Error ? `[ReciveRmq/stop/${this.eventName}] Error to close connection: ${error.message}` : `[ReciveBus/${this.eventName}] Error to close connection`
+      const message = error instanceof Error
+        ? `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection: ${error.message}`
+        : `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection`
       winstonLogger.error(message)
     }
   }
@@ -66,9 +72,11 @@ export class ReciveRmq<T> {
       await this.controller.reciveRMQ(data)
 
       channel.ack(message)
-      winstonLogger.info(`[ReciveBus/${this.eventName}] Message processed ${this.queue}`)
+      winstonLogger.info(`[ReciveBus/consume => ${this.exchangeName}] Message ack ${this.queue}`)
     } catch (error) {
-      const message = error instanceof Error ? `[ReciveRmq/consume/${this.eventName}] Error to close connection: ${error.message}` : `[ReciveBus/${this.eventName}] Error to close connection`
+      const message = error instanceof Error
+        ? `[ReciveRmq/consume => ${this.exchangeName}] Error consume: ${error.message}`
+        : `[ReciveRmq/consume => ${this.exchangeName}] Error consume`
       winstonLogger.error(message)
     }
   }

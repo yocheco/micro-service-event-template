@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import amqp from 'amqplib'
 
+import { Env } from '../../../src/config/env'
 import { ReciveRmq } from '../../../src/events/recieve/reciveRmq'
 import winstonLogger, { Levels } from '../../../src/lib/WinstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
@@ -27,7 +28,8 @@ const queue = 'userService.index.v1.queue.'
 const controllerMock = sendControllerMock
 
 // Init TEST
-const reciveRmq = new ReciveRmq<IMockModel>(eventName, queue, controllerMock)
+const exchangeBaseName: string = Env.EXCHANGE_BASE_NAME
+const reciveRmq = new ReciveRmq<IMockModel>(exchangeBaseName, eventName, queue, controllerMock)
 
 function delay (ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -97,7 +99,7 @@ describe('Message Broker RBQ reciver', () => {
     expect(mockInfo).toBeCalledTimes(3)
   })
 
-  test('should recive 2 messages 1 correct 1 incorrect  ', async () => {
+  test('should recive 2 messages 1 correct 1 incorrect', async () => {
     await reciveRmq.start()
 
     await testRmq.sendMessages<IMockModel>(reciveRmq.exchangeName, [messageOk, messageError])

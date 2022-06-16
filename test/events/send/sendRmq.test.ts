@@ -1,6 +1,7 @@
-import { SendRmq } from '../../../src/events/send/sendRmq'
+import { exchangeBaseName, SendRmq } from '../../../src/events/send/sendRmq'
 import winstonLogger, { Levels } from '../../../src/lib/WinstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
+import testRmq from '../shared/TestRmq'
 
 // info mock
 const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, Levels.INFO)
@@ -48,15 +49,21 @@ describe('Message Broker RBQ send', () => {
 
   test('should send correct message', async () => {
     await sendRmq.send({ data: 'hola' })
-    await delay(5)
+    await delay(10)
     await sendRmq.stop()
+    // Clear RMQ
+    await testRmq.clearRmq(exchangeBaseName + eventName)
+
     expect(mockInfo).toBeCalledTimes(2)
   })
 
   test('should send corret menssage to array', async () => {
     await sendRmqArray.send({ data: ['hola', 'hola'] })
-    await delay(5)
+    await delay(10)
     await sendRmqArray.stop()
+    // Clear RMQ
+    await testRmq.clearRmq(exchangeBaseName + eventName)
+
     expect(mockInfo).toBeCalledTimes(2)
   })
 })
