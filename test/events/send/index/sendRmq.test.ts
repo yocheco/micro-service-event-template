@@ -24,6 +24,9 @@ describe('Message Broker RBQ send', () => {
     mockError.mockClear()
   })
   afterEach(async () => {
+    // Clear mocks
+    mockInfo.mockClear()
+    mockError.mockClear()
   })
 
   test('should connect to RMQ', async () => {
@@ -36,7 +39,7 @@ describe('Message Broker RBQ send', () => {
   test('should thow RmqError error to no connection RMQ ', async () => {
     await sendRmq.send('amqp://localhost2')
     await delay(5)
-    await sendRmq.stop()
+
     expect(mockError).toBeCalledTimes(1)
   })
 })
