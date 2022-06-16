@@ -37,6 +37,17 @@ class TestRmq {
       throw new RmqError('[TestRmq/sendMessage] Error test send message')
     }
   }
+
+  public async sendMessages<T> (exchangeName: string, messages: IMessageBus<T>[]) {
+    await this.connectionRmq()
+    try {
+      messages.forEach(async (message) => {
+        await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
+      })
+    } catch (error) {
+      throw new RmqError('[TestRmq/sendMessage] Error test send message')
+    }
+  }
 }
 
 const testRmq = new TestRmq()
