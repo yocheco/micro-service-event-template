@@ -1,6 +1,6 @@
-import { SendRmq } from '../../../../src/events/send/sendRmq'
-import winstonLogger, { Levels } from '../../../../src/lib/WinstonLogger'
-import { mockError, mockInfo } from '../../../shared/mockWinstonLogger'
+import { SendRmq } from '../../../src/events/send/sendRmq'
+import winstonLogger, { Levels } from '../../../src/lib/WinstonLogger'
+import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
 
 // info mock
 const winstonLoggerInfoSpy = jest.spyOn(winstonLogger, Levels.INFO)
