@@ -41,8 +41,7 @@ export class SendRmq<T> {
     }
   }
 
-  public send = async ({ url, data }:{url?: string, data?: T} = {}): Promise<void> => {
-    if (!url) url = Env.CONNECTION_RMQ
+  public send = async ({ url = Env.CONNECTION_RMQ, data }:{url?: string, data?: T} = {}): Promise<void> => {
     try {
       await this.connectionRmq(url)
       winstonLogger.info('[SendRmq/send] Connected')
