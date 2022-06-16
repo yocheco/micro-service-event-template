@@ -47,7 +47,7 @@ describe('Message Broker RBQ reciver', () => {
     mockError.mockClear()
 
     // Clear RMQ
-    // await testRmq.clearRmq(reciveRmq.exchangeName, reciveRmq.queue)
+    await testRmq.clearRmq(reciveRmq.exchangeName, reciveRmq.queue)
   })
 
   test('should connect to RMQ', async () => {
