@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
 
-import indexBusSend from '../events/send/index/indexBusSend'
+import { SendRmq } from '../events/send/sendRmq'
 import winstonLogger from '../lib/WinstonLogger'
 import { Iindex } from '../models'
 import { ApiError } from '../shared/errors/apiError'
@@ -12,22 +12,20 @@ import { HttpStatusCode } from '../shared/types/http.model'
 class IndexController implements ISendController<Iindex> {
   public index = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Create model index
-      const index: Iindex = {
-        name: 'Sergio'
-      }
       const n = Math.floor(Math.random() * 10)
 
       if (n > 5) throw new ApiError('[IndexController] Error Auth no enviado')
 
       // Send event
-      indexBusSend.userAdd(index)
+      const eventName:string = 'index.created'
+      const sendRmq = new SendRmq<string>(eventName)
+      await sendRmq.send({ data: 'test' })
 
       // Create response
-      const responseOk: IApiResponse<Iindex> = {
+      const responseOk: IApiResponse<string> = {
         status: true,
         code: HttpStatusCode.OK,
-        data: index
+        data: 'test'
       }
       res.status(httpStatus.OK).send(responseOk)
     } catch (err) {

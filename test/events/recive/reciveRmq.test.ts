@@ -52,7 +52,7 @@ describe('Message Broker RBQ reciver', () => {
 
   test('should connect to RMQ', async () => {
     await reciveRmq.start()
-    await delay(5)
+    // await delay(5)
     await reciveRmq.stop()
     expect(connectSpy).toBeCalledTimes(1)
     expect(mockInfo).toBeCalledTimes(1)
