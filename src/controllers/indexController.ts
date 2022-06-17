@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
 
 import { SendRmq } from '../events/send/sendRmq'
-import winstonLogger from '../lib/WinstonLogger'
+import winstonLogger from '../lib/winstonLogger'
 import { Iindex } from '../models'
 import { ApiError } from '../shared/errors/apiError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'

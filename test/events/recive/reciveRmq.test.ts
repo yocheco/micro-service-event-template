@@ -3,7 +3,7 @@ import amqp from 'amqplib'
 
 import { Env } from '../../../src/config/env'
 import { ReciveRmq } from '../../../src/events/recieve/reciveRmq'
-import winstonLogger, { Levels } from '../../../src/lib/WinstonLogger'
+import winstonLogger, { Levels } from '../../../src/lib/winstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
 import { IMockModel, messageError, messageOk } from '../_mocks_/model'
 import { sendControllerMock } from '../_mocks_/sendControllerMock'

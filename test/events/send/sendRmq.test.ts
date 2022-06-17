@@ -1,5 +1,5 @@
 import { exchangeBaseName, SendRmq } from '../../../src/events/send/sendRmq'
-import winstonLogger, { Levels } from '../../../src/lib/WinstonLogger'
+import winstonLogger, { Levels } from '../../../src/lib/winstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
 import testRmq from '../shared/TestRmq'
 

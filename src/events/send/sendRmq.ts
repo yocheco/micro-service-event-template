@@ -2,7 +2,7 @@ import amqp, { Channel, Connection } from 'amqplib'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Env } from '../../config/env'
-import winstonLogger from '../../lib/WinstonLogger'
+import winstonLogger from '../../lib/winstonLogger'
 import { RmqError } from '../../shared/errors/rmqError'
 import { IMessageBus } from '../../shared/interfaces/rmq/messageBus'
 

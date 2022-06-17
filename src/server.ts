@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import bodyParser from 'body-parser'
 import compress from 'compression'
 import errorHandler from 'errorhandler'
@@ -10,7 +11,7 @@ import morgan from 'morgan'
 import SwaggerUi from 'swagger-ui-express'
 
 import swaggerJSDoc from './lib/swagger'
-import winstonLogger from './lib/WinstonLogger'
+import winstonLogger from './lib/winstonLogger'
 import indexRoutes from './routes/index'
 
 export class Server {
