@@ -3,13 +3,11 @@ import httpStatus from 'http-status'
 
 import { SendRmq } from '../events/send/sendRmq'
 import winstonLogger from '../lib/winstonLogger'
-import { Iindex } from '../models'
 import { ApiError } from '../shared/errors/apiError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'
-import { ISendController } from '../shared/interfaces/rmq/sendRmqController'
 import { HttpStatusCode } from '../shared/types/http.model'
 
-class IndexController implements ISendController<Iindex> {
+class IndexController {
   public index = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const n = Math.floor(Math.random() * 10)
@@ -38,11 +36,6 @@ class IndexController implements ISendController<Iindex> {
       winstonLogger.error(message)
       res.status(500).send(responseError)
     }
-  }
-
-  public reciveRMQ = ({ data }:{data: Iindex}): void => {
-    // eslint-disable-next-line no-console
-    console.log({ data })
   }
 }
 
