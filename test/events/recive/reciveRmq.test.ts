@@ -60,7 +60,7 @@ describe('Message Broker RBQ reciver', () => {
     expect(mockInfo).toBeCalledTimes(1)
   })
   test('should thow RmqError error to no connection RMQ', async () => {
-    await reciveRmq.start('amqp://localhost2')
+    await reciveRmq.start({ url: 'amqp://localhost2' })
     expect(mockError).toBeCalledTimes(1)
   })
 

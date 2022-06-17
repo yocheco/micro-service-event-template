@@ -22,28 +22,16 @@ export class ReciveRmq<T> {
     this.queue = queueService + eventName
   }
 
-  private connectionRmq = async (url: string) => {
+  public start = async ({ url = Env.CONNECTION_RMQ }:{url?: string} = {}): Promise<void> => {
     try {
-      connection = await amqp.connect(url)
-      channel = await connection.createConfirmChannel()
-    } catch (error) {
-      const message = error instanceof Error
-        ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
-        : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
-      throw new RmqError(message)
-    }
-  }
-
-  public start = async (url: string = Env.CONNECTION_RMQ): Promise<void> => {
-    try {
-      await this.connectionRmq(url)
+      await this.connectionRmq({ url })
       await channel.assertQueue(this.queue)
       await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE)
       await channel.bindQueue(this.queue, this.exchangeName, '')
       winstonLogger.info(`[ReciveRmq/connection => ${this.exchangeName}] Connected`)
 
       // Consume message
-      await channel.consume(this.queue, async message => this.consume(message), { noAck: false })
+      await channel.consume(this.queue, async message => this.consume({ message }), { noAck: false })
     } catch (error) {
       const message = error instanceof Error
         ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
@@ -63,7 +51,19 @@ export class ReciveRmq<T> {
     }
   }
 
-  private consume = async (message: amqp.ConsumeMessage|null) => {
+  private connectionRmq = async ({ url }:{url: string}) => {
+    try {
+      connection = await amqp.connect(url)
+      channel = await connection.createConfirmChannel()
+    } catch (error) {
+      const message = error instanceof Error
+        ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
+        : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
+      throw new RmqError(message)
+    }
+  }
+
+  private consume = async ({ message }:{message: amqp.ConsumeMessage|null}) => {
     try {
       if (!message) throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error Sould send a valid message`)
 
