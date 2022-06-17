@@ -1,32 +1,29 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
-import { Iindex } from '../models'
-import { BaseError } from '../shared/errors/baseError'
+
+import { SendRmq } from '../events/send/sendRmq'
+import winstonLogger from '../lib/winstonLogger'
+import { ApiError } from '../shared/errors/apiError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'
 import { HttpStatusCode } from '../shared/types/http.model'
-import { ApiError } from '../shared/errors/apiError'
-import indexBusSend from '../events/send/index/indexBusSend'
-import winstonLogger from '../lib/WinstonLogger'
 
 class IndexController {
   public index = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Create model index
-      const index: Iindex = {
-        name: 'Sergio'
-      }
       const n = Math.floor(Math.random() * 10)
 
-      if (n > 5) throw new ApiError('Error Auth no enviado', 'index', HttpStatusCode.UNAUTHORIZED)
+      if (n > 5) throw new ApiError('[IndexController] Error Auth no enviado')
 
       // Send event
-      indexBusSend.userAdd(index)
+      const eventName:string = 'index.created'
+      const sendRmq = new SendRmq<string>(eventName)
+      await sendRmq.send({ data: 'test' })
 
       // Create response
-      const responseOk: IApiResponse<Iindex> = {
+      const responseOk: IApiResponse<string> = {
         status: true,
         code: HttpStatusCode.OK,
-        data: index
+        data: 'test'
       }
       res.status(httpStatus.OK).send(responseOk)
     } catch (err) {
@@ -37,17 +34,7 @@ class IndexController {
         message
       }
       winstonLogger.error(message)
-      res.status((<BaseError>err)?.httpCode || 500).send(responseError)
-      // next(err)
-    }
-  }
-
-  public tetsRMQ = async (message:any) => {
-    try {
-      const content = JSON.parse(message.content.toString())
-      console.log(content)
-    } catch (error) {
-
+      res.status(500).send(responseError)
     }
   }
 }

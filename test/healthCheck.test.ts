@@ -1,7 +1,8 @@
 
 import request from 'supertest'
+
 import { App } from '../src/app'
-import winstonLogger from '../src/lib/WinstonLogger'
+import winstonLogger from '../src/lib/winstonLogger'
 import { mockError, mockInfo } from './shared/mockWinstonLogger'
 
 let application: App

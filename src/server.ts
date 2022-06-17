@@ -1,16 +1,18 @@
-import express, { Request, Response } from 'express'
-import compress from 'compression'
+/* eslint-disable no-console */
 import bodyParser from 'body-parser'
-import Router from 'express-promise-router'
-import httpStatus from 'http-status'
-import * as http from 'http'
-import helmet from 'helmet'
+import compress from 'compression'
 import errorHandler from 'errorhandler'
-import indexRoutes from './routes/index'
+import express, { Request, Response } from 'express'
+import Router from 'express-promise-router'
+import helmet from 'helmet'
+import * as http from 'http'
+import httpStatus from 'http-status'
 import morgan from 'morgan'
 import SwaggerUi from 'swagger-ui-express'
+
 import swaggerJSDoc from './lib/swagger'
-import winstonLogger from './lib/WinstonLogger'
+import winstonLogger from './lib/winstonLogger'
+import indexRoutes from './routes/index'
 
 export class Server {
   private port: string

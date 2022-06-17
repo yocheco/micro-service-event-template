@@ -1,7 +1,12 @@
-import { HttpStatusCode } from '../types/http.model'
-import { BaseError } from './baseError'
-export class RmqError extends BaseError {
-  constructor (message: string, methodName = '', httpCode = HttpStatusCode.INTERNAL_SERVER, isOperational = true) {
-    super('', message, methodName, httpCode, isOperational)
+/* eslint-disable no-useless-constructor */
+export class RmqError extends Error {
+  constructor (message: string) {
+    super(message)
+  }
+}
+
+export class RmqErrorCastMessage extends Error {
+  constructor (message: string) {
+    super(message)
   }
 }

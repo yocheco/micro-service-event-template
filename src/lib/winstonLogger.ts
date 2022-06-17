@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 import winston, { format } from 'winston'
 
-export enum Levels {
+export const enum Levels {
   DEBUG = 'debug',
   ERROR = 'error',
   INFO = 'info'
@@ -52,11 +53,11 @@ const logger = winston.createLogger({
 })
 
 class WinstonLogger {
-  debug (message: string): void  {
+  debug (message: string): void {
     logger.debug(message)
   }
 
-  error (message: string | Error): void  {
+  error (message: string | Error): void {
     logger.error(message)
   }
 

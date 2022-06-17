@@ -2,7 +2,8 @@ node_modules/
 dist/
 .tmp
 logs/
-data
+data-dev
+data-prod
 test-results.xml
 .eslintcache
 coverage
