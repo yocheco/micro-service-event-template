@@ -18,15 +18,17 @@ export class SendRmq<T> {
      this.eventName = eventName
    }
 
-  private connectionRmq = async (url: string) => {
+  public send = async ({ url = Env.CONNECTION_RMQ, data }:{url?: string, data?: T} = {}): Promise<void> => {
     try {
-      connection = await amqp.connect(url)
-      channel = await connection.createConfirmChannel()
+      await this.connectionRmq({ url })
+      winstonLogger.info('[SendRmq/send] Connected')
+
+      if (data) await this.publish({ data })
     } catch (error) {
       const message = error instanceof Error
-        ? `[SendRmq/connectionRmq/] Error connect Rmq to ${exchangeBaseName}${this.eventName} : ${error.message}`
-        : `[SendRmq/connectionRmq/] Error connect Rmq to ${exchangeBaseName}${this.eventName}`
-      throw new RmqError(message)
+        ? `[SendRmq/send] Error send message to ${exchangeBaseName}${this.eventName}: ${error.message}`
+        : `[SendRmq/send] Error send message to ${exchangeBaseName}${this.eventName}`
+      winstonLogger.error(message)
     }
   }
 
@@ -41,21 +43,19 @@ export class SendRmq<T> {
     }
   }
 
-  public send = async ({ url = Env.CONNECTION_RMQ, data }:{url?: string, data?: T} = {}): Promise<void> => {
+  private connectionRmq = async ({ url } : {url: string}) => {
     try {
-      await this.connectionRmq(url)
-      winstonLogger.info('[SendRmq/send] Connected')
-
-      if (data) await this.publish(data)
+      connection = await amqp.connect(url)
+      channel = await connection.createConfirmChannel()
     } catch (error) {
       const message = error instanceof Error
-        ? `[SendRmq/send] Error send message to ${exchangeBaseName}${this.eventName}: ${error.message}`
-        : `[SendRmq/send] Error send message to ${exchangeBaseName}${this.eventName}`
-      winstonLogger.error(message)
+        ? `[SendRmq/connectionRmq/] Error connect Rmq to ${exchangeBaseName}${this.eventName} : ${error.message}`
+        : `[SendRmq/connectionRmq/] Error connect Rmq to ${exchangeBaseName}${this.eventName}`
+      throw new RmqError(message)
     }
   }
 
-  private publish = async (data: T) => {
+  private publish = async ({ data }:{data: T}) => {
     try {
       const exchangeName = exchangeBaseName + this.eventName
       channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE, { durable: true })
