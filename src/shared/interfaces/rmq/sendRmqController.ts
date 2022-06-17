@@ -1,3 +1,3 @@
 export interface ISendController<T>{
-  reciveRMQ: (data:T) => void
+  reciveRMQ: ({ data } : {data: T}) => void
 }

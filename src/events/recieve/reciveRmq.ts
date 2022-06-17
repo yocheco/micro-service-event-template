@@ -69,7 +69,7 @@ export class ReciveRmq<T> {
 
       const data = await deserializeMessage<T>(message!)
 
-      await this.controller.reciveRMQ(data)
+      await this.controller.reciveRMQ({ data })
 
       channel.ack(message)
       winstonLogger.info(`[ReciveBus/consume => ${this.exchangeName}] Message ack ${this.queue}`)

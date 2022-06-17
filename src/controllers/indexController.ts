@@ -40,9 +40,9 @@ class IndexController implements ISendController<Iindex> {
     }
   }
 
-  public reciveRMQ = (index: Iindex): void => {
+  public reciveRMQ = ({ data }:{data: Iindex}): void => {
     // eslint-disable-next-line no-console
-    console.log({ index })
+    console.log({ data })
   }
 }
 
