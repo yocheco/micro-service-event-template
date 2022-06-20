@@ -1,4 +1,4 @@
-import { Env } from './config/env'
+import { Env } from './config/env/env'
 import { recivers } from './recivers'
 import { Server } from './server'
 

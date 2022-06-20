@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals'
 import amqp from 'amqplib'
 
-import { Env } from '../../../src/config/env'
+import { Env } from '../../../src/config/env/env'
 import { ReciveRmq } from '../../../src/events/recieve/reciveRmq'
 import winstonLogger, { Levels } from '../../../src/lib/winstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'

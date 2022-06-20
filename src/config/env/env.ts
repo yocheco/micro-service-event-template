@@ -1,3 +1,12 @@
+import convict from 'convict'
+
+const config = convict({
+  port: {
+    format: 'int',
+    default: 5000,
+    env: 'PORT'
+  }
+})
 
 export namespace Env{
   // App

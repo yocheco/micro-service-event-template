@@ -1,4 +1,4 @@
-import { Env } from './config/env'
+import { Env } from './config/env/env'
 import { createIndexController } from './controllers/recive/createIndexController'
 import { ReciveRmq } from './events/recieve/reciveRmq'
 import { Iindex } from './models'
