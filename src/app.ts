@@ -9,7 +9,7 @@ export class App {
     const port = Env.PORT
     this.server = new Server(port)
     // Index created start
-    if (Env.NODE_ENV !== 'test') await recivers.start()
+    if (Env.ENV !== 'test') await recivers.start()
     return this.server.listen()
   }
 
@@ -19,7 +19,7 @@ export class App {
 
   async stop () {
     // Index created stop
-    if (Env.NODE_ENV !== 'test') await recivers.stop()
+    if (Env.ENV !== 'test') await recivers.stop()
     return this.server?.stop()
   }
 }

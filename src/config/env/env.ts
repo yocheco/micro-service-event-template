@@ -1,6 +1,13 @@
 import convict from 'convict'
+import path from 'path'
 
 const config = convict({
+  env: {
+    doc: 'The application environment.',
+    format: ['production', 'development', 'test'],
+    default: 'development',
+    env: 'NODE_ENV'
+  },
   port: {
     format: 'int',
     default: 5000,
@@ -8,11 +15,15 @@ const config = convict({
   }
 })
 
+// Load environment dependent configuration
+config.loadFile(path.join(__dirname, `${config.get('env')}.json`))
+// Perform validation
+config.validate({ allowed: 'strict' })
+
 export namespace Env{
   // App
-  export const NODE_ENV = process.env.NODE_ENV || 'dev'
-  export const PORT = process.env.PORT || '5000'
-
+  export const ENV = config.get('env')
+  export const PORT = config.get('port')
   // MONGO
   // dev
   export const MONGOURI = process.env.MONGO || 'mongodb://localhost:27017/mvc'
