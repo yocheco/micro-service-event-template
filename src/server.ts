@@ -15,11 +15,11 @@ import winstonLogger from './lib/winstonLogger'
 import indexRoutes from './routes/index'
 
 export class Server {
-  private port: string
+  private port: number
   private express: express.Express
   private httpServer?: http.Server
 
-  constructor (port: string) {
+  constructor (port: number) {
     this.port = port
     this.express = express()
     // Body

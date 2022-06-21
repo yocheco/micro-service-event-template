@@ -1,6 +1,6 @@
 import amqp, { Channel, Connection } from 'amqplib'
 
-import { Env } from '../../config/env'
+import { Env } from '../../config/env/env'
 import winstonLogger from '../../lib/winstonLogger'
 import { RmqError } from '../../shared/errors/rmqError'
 import { ISendController } from '../../shared/interfaces/rmq/sendRmqController'

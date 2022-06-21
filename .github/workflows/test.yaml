@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.15, 18.x]
+        mongodb-version: [4.4]
         rabbitmq-version: ['3.8.2-management-alpine']
 
     steps:
@@ -19,6 +20,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: 🦖 Launch MongoDB
+        uses: wbari/start-mongoDB@v0.2
+        with:
+          mongoDBVersion: ${{ matrix.mongodb-version }}
+
       - name: 🐰 Launch RabbitMQ
         uses: nijel/rabbitmq-action@v1.0.0
         with:
@@ -28,7 +34,7 @@ jobs:
         run: |
           npm install
       
-      - name: ✅ Start test npm
+      - name: 🃏 Start test npm
         run: |
           npm test
       - name: ✌️ Finish
