@@ -1,11 +1,25 @@
 import mongoose from 'mongoose'
 
+import winstonLogger from '../../lib/winstonLogger'
 import { Env } from '../env/env'
 
-export async function startConnection () {
-  const options = { keepAlive: true }
+const options = { keepAlive: true }
 
-  mongoose.connect(Env.MONGOURI, options)
-    .then(db => console.log('🤓 Mongoose is alive!!!!'))
-    .catch(err => console.error(err))
+export class MongoDb {
+  public start = async ({ url = Env.MONGOURI }:{ url?: string } = {}) => {
+    try {
+      await mongoose.connect(url, options)
+      winstonLogger.info('[Mongoose is connected]')
+    } catch (error) {
+      winstonLogger.error('[Mongoose] error to connected')
+    }
+  }
+
+  public stop = async () => {
+    try {
+      mongoose.disconnect()
+    } catch (error) {
+      winstonLogger.error('[Mongoose] error to desconnected')
+    }
+  }
 }
