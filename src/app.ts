@@ -8,7 +8,7 @@ export class App {
   async start () {
     const port = Env.PORT
     this.server = new Server(port)
-    // Index created start
+    // init Rmq reciver
     if (Env.ENV !== 'test') await recivers.start()
     return this.server.listen()
   }

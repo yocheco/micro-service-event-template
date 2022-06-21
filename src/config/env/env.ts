@@ -9,37 +9,83 @@ const config = convict({
     env: 'NODE_ENV'
   },
   port: {
-    format: 'int',
+    format: Number,
     default: 5000,
     env: 'PORT'
+  },
+  rmq: {
+    connection: {
+      format: String,
+      default: 'amqp://localhost',
+      env: 'CONNECTION_RMQ'
+    },
+    exchange: {
+      type: {
+        format: String,
+        default: 'fanout',
+        env: 'EXCHANGE_TYPE'
+      },
+      name: {
+        format: String,
+        default: 'houndy.userService.v1.event.',
+        env: 'EXCHANGE_BASE_NAME'
+      }
+    }
+  },
+  mongo: {
+    user: {
+      format: String,
+      default: 'user',
+      env: 'MONGO_USERNAME'
+    },
+    password: {
+      format: String,
+      default: 'pass',
+      env: 'MONGO_PASSWORD'
+    },
+    host: {
+      format: String,
+      default: 'localhost',
+      env: 'MONGO_HOSTNAME'
+    },
+    port: {
+      format: String,
+      default: '27017',
+      env: 'MONGO_PORT'
+    },
+    db: {
+      format: String,
+      default: 'mvc',
+      env: 'MONGO_DB'
+    }
   }
+
 })
 
+const env = config.get('env')
+
 // Load environment dependent configuration
-config.loadFile(path.join(__dirname, `${config.get('env')}.json`))
+config.loadFile(path.join(__dirname, `${env}.json`))
 // Perform validation
 config.validate({ allowed: 'strict' })
 
+function urlDbMongo (): string {
+  return (env === 'production')
+    ? `mongodb://${config.get('mongo').user}:${config.get('mongo').password}@${config.get('mongo').host}:${config.get('mongo').port}/${config.get('mongo').db}?authSource=admin`
+    : `mongodb://${config.get('mongo').host}:${config.get('mongo').port}/${config.get('mongo').db}`
+}
 export namespace Env{
   // App
-  export const ENV = config.get('env')
+  export const ENV = env
   export const PORT = config.get('port')
+
   // MONGO
-  // dev
-  export const MONGOURI = process.env.MONGO || 'mongodb://localhost:27017/mvc'
-  // test
-  export const MONGOURI_TEST = process.env.MONGO_TEST || 'mongodb://localhost:27017/test'
-  // prod
-  export const MONGO_USERNAME = process.env.MONGO_USERNAME || 'admin'
-  export const MONGO_PASSWORD = process.env.MONGO_PASSWORD || '-Micro$er-'
-  export const MONGO_HOSTNAME = process.env.MONGO_HOSTNAME || 'db'
-  export const MONGO_PORT = process.env.MONGO_PORT || '27017'
-  export const MONGO_DB = process.env.MONGO_DB || 'mvc'
+  export const MONGOURI = urlDbMongo()
 
   // RMQ
   // connect
-  export const CONNECTION_RMQ: string = process.env.CONNECTION_RMQ || 'amqp://localhost'
+  export const CONNECTION_RMQ: string = config.get('rmq').connection
   // send
-  export const EXCHANGE_TYPE: string = process.env.EXCHANGE_TYPE || 'fanout'
-  export const EXCHANGE_BASE_NAME: string = process.env.EXCHANGE_BASE_NAME || 'houndy.userService.v1.event.'
+  export const EXCHANGE_TYPE: string = config.get('rmq').exchange.type
+  export const EXCHANGE_BASE_NAME: string = config.get('rmq').exchange.name
 }
