@@ -1,4 +1,5 @@
 import amqp, { Channel, Connection } from 'amqplib'
+import { response } from 'express'
 
 import { Env } from '../../config/env/env'
 import winstonLogger from '../../lib/winstonLogger'
@@ -37,6 +38,9 @@ export class ReciveRmq<T> {
         ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
         : `[ReciveRmq/start => ${this.exchangeName}] Error to start`
       winstonLogger.error(message)
+
+      // reconecction..
+      this.retryConnection()
     }
   }
 
@@ -57,12 +61,11 @@ export class ReciveRmq<T> {
       channel = await connection.createConfirmChannel()
       channel.prefetch(5)
 
+      // Lost connection to Rmq
       channel.on('close', () => {
-        // eslint-disable-next-line no-console
-        console.log('lost connection')
+        this.retryConnection()
       })
     } catch (error) {
-      // reintentar connection
       const message = error instanceof Error
         ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
         : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
@@ -76,7 +79,14 @@ export class ReciveRmq<T> {
 
       const data = await deserializeMessage<T>(message)
 
-      await this.controller.reciveRMQ({ data })
+      // send data message to controller
+      const response:boolean = await this.controller.reciveRMQ({ data })
+
+      // return message to queue
+      if (!response) {
+        await channel.nack(message)
+        throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error: Controller no ack message`)
+      }
 
       channel.ack(message)
       winstonLogger.info(`[ReciveBus/consume => ${this.exchangeName}] Message ack ${this.queue}`)
@@ -86,5 +96,9 @@ export class ReciveRmq<T> {
         : `[ReciveRmq/consume => ${this.exchangeName}] Error consume`
       winstonLogger.error(message)
     }
+  }
+
+  public retryConnection () {
+    setTimeout(this.start, 7000)
   }
 }
