@@ -25,8 +25,8 @@ export class ReciveRmq<T> {
   public start = async ({ url = Env.CONNECTION_RMQ }:{url?: string} = {}): Promise<void> => {
     try {
       await this.connectionRmq({ url })
-      await channel.assertQueue(this.queue)
-      await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE)
+      await channel.assertQueue(this.queue, { durable: true })
+      await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE, { durable: true })
       await channel.bindQueue(this.queue, this.exchangeName, '')
       winstonLogger.info(`[ReciveRmq/connection => ${this.exchangeName}] Connected`)
 
@@ -53,7 +53,7 @@ export class ReciveRmq<T> {
 
   private connectionRmq = async ({ url }:{url: string}) => {
     try {
-      connection = await amqp.connect(url)
+      connection = await amqp.connect(url + '?heartbeat=1')
       channel = await connection.createConfirmChannel()
     } catch (error) {
       const message = error instanceof Error
@@ -65,9 +65,9 @@ export class ReciveRmq<T> {
 
   private consume = async ({ message }:{message: amqp.ConsumeMessage|null}) => {
     try {
-      if (!message) throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error Sould send a valid message`)
+      if (message == null) throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error Sould send a valid message`)
 
-      const data = await deserializeMessage<T>(message!)
+      const data = await deserializeMessage<T>(message)
 
       await this.controller.reciveRMQ({ data })
 
