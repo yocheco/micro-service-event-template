@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "NODE_ENV=development ts-node-dev --ignore-watch node_modules  ./src/start.ts",
-    "dev2": "NODE_ENV=test PORT=5001 ts-node-dev --ignore-watch node_modules  ./src/start.ts",
+    "dev:send": "NODE_ENV=test PORT=5001 ts-node-dev --ignore-watch node_modules  ./src/start.ts",
     "test": "NODE_ENV=test jest --verbose --silent --detectOpenHandles",
     "test:watch": "npm run test -- --watch"
   },

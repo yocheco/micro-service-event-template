@@ -55,7 +55,14 @@ export class ReciveRmq<T> {
     try {
       connection = await amqp.connect(url + '?heartbeat=1')
       channel = await connection.createConfirmChannel()
+      channel.prefetch(5)
+
+      channel.on('close', () => {
+        // eslint-disable-next-line no-console
+        console.log('lost connection')
+      })
     } catch (error) {
+      // reintentar connection
       const message = error instanceof Error
         ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
         : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`

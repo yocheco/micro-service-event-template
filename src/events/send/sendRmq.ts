@@ -1,4 +1,4 @@
-import amqp, { Channel, Connection } from 'amqplib'
+import amqp, { ConfirmChannel, Connection } from 'amqplib'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Env } from '../../config/env/env'
@@ -7,7 +7,7 @@ import { RmqError } from '../../shared/errors/rmqError'
 import { IMessageBus } from '../../shared/interfaces/rmq/messageBus'
 
 let connection: Connection
-let channel: Channel
+let channel: ConfirmChannel
 
 export const exchangeBaseName = Env.EXCHANGE_BASE_NAME
 // export const eventName = 'index.created'
@@ -70,6 +70,7 @@ export class SendRmq<T> {
       }
 
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
+      await channel.waitForConfirms()
       winstonLogger.info(`[SendRmq/publish] publish to ${exchangeName}`)
     } catch (error) {
       const message = error instanceof Error
