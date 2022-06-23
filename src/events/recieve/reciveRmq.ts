@@ -1,5 +1,4 @@
 import amqp, { Channel, Connection } from 'amqplib'
-import { response } from 'express'
 
 import { Env } from '../../config/env/env'
 import winstonLogger from '../../lib/winstonLogger'
@@ -16,7 +15,7 @@ let channel: Channel
 
 export class ReciveRmq<T> {
   public exchangeName: string
-  queue: string
+  public queue: string
 
   constructor (exchangeBaseName: string, public eventName: string, queueService: string, public controller: ISendController<T>) {
     this.exchangeName = exchangeBaseName + eventName
@@ -38,9 +37,6 @@ export class ReciveRmq<T> {
         ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
         : `[ReciveRmq/start => ${this.exchangeName}] Error to start`
       winstonLogger.error(message)
-
-      // reconecction..
-      this.retryConnection()
     }
   }
 
@@ -66,6 +62,8 @@ export class ReciveRmq<T> {
         this.retryConnection()
       })
     } catch (error) {
+      // reconecction..
+      this.retryConnection()
       const message = error instanceof Error
         ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
         : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
@@ -84,7 +82,7 @@ export class ReciveRmq<T> {
 
       // return message to queue
       if (!response) {
-        await channel.nack(message)
+        // await channel.nack(message)
         throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error: Controller no ack message`)
       }
 

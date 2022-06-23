@@ -86,7 +86,7 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.start()
 
     await testRmq.sendMessage<IMockModel>(reciveRmq.exchangeName, messageError)
-    // await delay(20)
+    // await delay(50)
 
     await testRmq.closeConnection()
     await reciveRmq.stop()
@@ -99,7 +99,7 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.start()
 
     await testRmq.sendMessages<IMockModel>(reciveRmq.exchangeName, [messageOk, messageOk])
-    await delay(30)
+    await delay(50)
     await testRmq.closeConnection()
     await reciveRmq.stop()
     expect(mockInfo).toBeCalledTimes(3)
@@ -109,7 +109,7 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.start()
 
     await testRmq.sendMessages<IMockModel>(reciveRmq.exchangeName, [messageOk, messageError])
-    await delay(30)
+    await delay(50)
     await testRmq.closeConnection()
     await reciveRmq.stop()
 
