@@ -1,6 +1,7 @@
 import amqp, { Channel, Connection } from 'amqplib'
 
 import { Env } from '../../config/env/env'
+import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
 import { RmqError } from '../../shared/errors/rmqError'
 import { ISendController } from '../../shared/interfaces/rmq/sendRmqController'
@@ -97,6 +98,7 @@ export class ReciveRmq<T> {
   }
 
   public retryConnection () {
-    setTimeout(this.start, 7000)
+    backOff.delay(this.start, 20)
+    winstonLogger.info(`[ReciveRmq/retryConnection => ${this.exchangeName}] Retry connection to Rmq`)
   }
 }
