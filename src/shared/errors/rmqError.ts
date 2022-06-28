@@ -10,3 +10,9 @@ export class RmqErrorCastMessage extends Error {
     super(message)
   }
 }
+
+export class RmqConnectionError extends Error {
+  constructor (message: string) {
+    super(message)
+  }
+}

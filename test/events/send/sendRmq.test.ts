@@ -15,6 +15,11 @@ winstonLoggerErrorSpy.mockImplementation(mockError)
 const eventName = 'sendRmq.test'
 // start send
 const sendRmq = new SendRmq<string>(eventName)
+
+// reciver spy retryCoonection
+const retryConnection = jest.spyOn(sendRmq, 'retryConnection')
+retryConnection.mockImplementation(() => true)
+
 // start send array
 const sendRmqArray = new SendRmq<string[]>(eventName)
 
@@ -27,11 +32,13 @@ describe('Message Broker RBQ send', () => {
     // Clear mocks
     mockInfo.mockClear()
     mockError.mockClear()
+    retryConnection.mockClear()
   })
   afterEach(async () => {
     // Clear mocks
     mockInfo.mockClear()
     mockError.mockClear()
+    retryConnection.mockClear()
   })
 
   test('should connect to RMQ', async () => {
@@ -41,10 +48,11 @@ describe('Message Broker RBQ send', () => {
     expect(mockInfo).toBeCalledTimes(1)
   })
 
-  test('should thow RmqError error to no connection RMQ ', async () => {
+  test('should retry-connection to down RMQ server ', async () => {
     await sendRmq.send({ url: 'amqp://localhost2' })
 
     expect(mockError).toBeCalledTimes(1)
+    expect(retryConnection).toBeCalledTimes(1)
   })
 
   test('should send correct message', async () => {

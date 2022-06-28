@@ -3,7 +3,7 @@ import amqp, { Channel, Connection } from 'amqplib'
 import { Env } from '../../config/env/env'
 import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
-import { RmqError } from '../../shared/errors/rmqError'
+import { RmqConnectionError, RmqError } from '../../shared/errors/rmqError'
 import { ISendController } from '../../shared/interfaces/rmq/sendRmqController'
 import { deserializeMessage } from '../shared/serializeMessage'
 
@@ -23,35 +23,6 @@ export class ReciveRmq<T> {
     this.queue = queueService + eventName
   }
 
-  public start = async ({ url = Env.CONNECTION_RMQ }:{url?: string} = {}): Promise<void> => {
-    try {
-      await this.connectionRmq({ url })
-      await channel.assertQueue(this.queue, { durable: true })
-      await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE, { durable: true })
-      await channel.bindQueue(this.queue, this.exchangeName, '')
-      winstonLogger.info(`[ReciveRmq/connection => ${this.exchangeName}] Connected`)
-
-      // Consume message
-      await channel.consume(this.queue, async message => this.consume({ message }), { noAck: false })
-    } catch (error) {
-      const message = error instanceof Error
-        ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
-        : `[ReciveRmq/start => ${this.exchangeName}] Error to start`
-      winstonLogger.error(message)
-    }
-  }
-
-  public stop = async (): Promise<void> => {
-    try {
-      await connection?.close()
-    } catch (error) {
-      const message = error instanceof Error
-        ? `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection: ${error.message}`
-        : `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection`
-      winstonLogger.error(message)
-    }
-  }
-
   private connectionRmq = async ({ url }:{url: string}) => {
     try {
       connection = await amqp.connect(url + '?heartbeat=1')
@@ -63,12 +34,10 @@ export class ReciveRmq<T> {
         this.retryConnection()
       })
     } catch (error) {
-      // reconecction..
-      this.retryConnection()
       const message = error instanceof Error
         ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
         : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
-      throw new RmqError(message)
+      throw new RmqConnectionError(message)
     }
   }
 
@@ -93,6 +62,39 @@ export class ReciveRmq<T> {
       const message = error instanceof Error
         ? `[ReciveRmq/consume => ${this.exchangeName}] Error consume: ${error.message}`
         : `[ReciveRmq/consume => ${this.exchangeName}] Error consume`
+      winstonLogger.error(message)
+    }
+  }
+
+  public start = async ({ url = Env.CONNECTION_RMQ }:{url?: string} = {}): Promise<void> => {
+    try {
+      await this.connectionRmq({ url })
+      await channel.assertQueue(this.queue, { durable: true })
+      await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE, { durable: true })
+      await channel.bindQueue(this.queue, this.exchangeName, '')
+      winstonLogger.info(`[ReciveRmq/connection => ${this.exchangeName}] Connected`)
+
+      // Consume message
+      await channel.consume(this.queue, async message => this.consume({ message }), { noAck: false })
+    } catch (error) {
+      // catch error to connection
+      if (error instanceof RmqConnectionError) {
+        this.retryConnection()
+      }
+      const message = error instanceof Error
+        ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
+        : `[ReciveRmq/start => ${this.exchangeName}] Error to start`
+      winstonLogger.error(message)
+    }
+  }
+
+  public stop = async (): Promise<void> => {
+    try {
+      await connection?.close()
+    } catch (error) {
+      const message = error instanceof Error
+        ? `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection: ${error.message}`
+        : `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection`
       winstonLogger.error(message)
     }
   }
