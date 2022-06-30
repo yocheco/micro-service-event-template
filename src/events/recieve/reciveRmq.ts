@@ -1,8 +1,9 @@
 import amqp, { Channel, Connection } from 'amqplib'
 
 import { Env } from '../../config/env/env'
+import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
-import { RmqError } from '../../shared/errors/rmqError'
+import { RmqConnectionError, RmqError } from '../../shared/errors/rmqError'
 import { ISendController } from '../../shared/interfaces/rmq/sendRmqController'
 import { deserializeMessage } from '../shared/serializeMessage'
 
@@ -15,24 +16,71 @@ let channel: Channel
 
 export class ReciveRmq<T> {
   public exchangeName: string
-  queue: string
+  public queue: string
 
   constructor (exchangeBaseName: string, public eventName: string, queueService: string, public controller: ISendController<T>) {
     this.exchangeName = exchangeBaseName + eventName
     this.queue = queueService + eventName
   }
 
+  private connectionRmq = async ({ url }:{url: string}) => {
+    try {
+      connection = await amqp.connect(url + '?heartbeat=1')
+      channel = await connection.createConfirmChannel()
+      channel.prefetch(5)
+
+      // Lost connection to Rmq
+      channel.on('close', () => {
+        this.retryConnection()
+      })
+    } catch (error) {
+      const message = error instanceof Error
+        ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
+        : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
+      throw new RmqConnectionError(message)
+    }
+  }
+
+  private consume = async ({ message }:{message: amqp.ConsumeMessage|null}) => {
+    try {
+      if (message == null) throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error Sould send a valid message`)
+
+      const data = await deserializeMessage<T>(message)
+
+      // send data message to controller
+      const response:boolean = await this.controller.reciveRMQ({ data })
+
+      // return message to queue
+      if (!response) {
+        // await channel.nack(message)
+        throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error: Controller no ack message`)
+      }
+
+      channel.ack(message)
+      winstonLogger.info(`[ReciveBus/consume => ${this.exchangeName}] Message ack ${this.queue}`)
+    } catch (error) {
+      const message = error instanceof Error
+        ? `[ReciveRmq/consume => ${this.exchangeName}] Error consume: ${error.message}`
+        : `[ReciveRmq/consume => ${this.exchangeName}] Error consume`
+      winstonLogger.error(message)
+    }
+  }
+
   public start = async ({ url = Env.CONNECTION_RMQ }:{url?: string} = {}): Promise<void> => {
     try {
       await this.connectionRmq({ url })
-      await channel.assertQueue(this.queue)
-      await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE)
+      await channel.assertQueue(this.queue, { durable: true })
+      await channel.assertExchange(this.exchangeName, Env.EXCHANGE_TYPE, { durable: true })
       await channel.bindQueue(this.queue, this.exchangeName, '')
       winstonLogger.info(`[ReciveRmq/connection => ${this.exchangeName}] Connected`)
 
       // Consume message
       await channel.consume(this.queue, async message => this.consume({ message }), { noAck: false })
     } catch (error) {
+      // catch error to connection
+      if (error instanceof RmqConnectionError) {
+        this.retryConnection()
+      }
       const message = error instanceof Error
         ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
         : `[ReciveRmq/start => ${this.exchangeName}] Error to start`
@@ -51,33 +99,8 @@ export class ReciveRmq<T> {
     }
   }
 
-  private connectionRmq = async ({ url }:{url: string}) => {
-    try {
-      connection = await amqp.connect(url)
-      channel = await connection.createConfirmChannel()
-    } catch (error) {
-      const message = error instanceof Error
-        ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
-        : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
-      throw new RmqError(message)
-    }
-  }
-
-  private consume = async ({ message }:{message: amqp.ConsumeMessage|null}) => {
-    try {
-      if (!message) throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error Sould send a valid message`)
-
-      const data = await deserializeMessage<T>(message!)
-
-      await this.controller.reciveRMQ({ data })
-
-      channel.ack(message)
-      winstonLogger.info(`[ReciveBus/consume => ${this.exchangeName}] Message ack ${this.queue}`)
-    } catch (error) {
-      const message = error instanceof Error
-        ? `[ReciveRmq/consume => ${this.exchangeName}] Error consume: ${error.message}`
-        : `[ReciveRmq/consume => ${this.exchangeName}] Error consume`
-      winstonLogger.error(message)
-    }
+  public retryConnection () {
+    backOff.delay(this.start, 20)
+    winstonLogger.info(`[ReciveRmq/retryConnection => ${this.exchangeName}] Retry connection to Rmq`)
   }
 }

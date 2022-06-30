@@ -1,13 +1,13 @@
 
-import { RmqError } from '../../../src/shared/errors/rmqError'
 import { ISendController } from '../../../src/shared/interfaces/rmq/sendRmqController'
 import { IMockModel } from './model'
 
 class SendControllerMock implements ISendController<IMockModel> {
-  public reciveRMQ = async ({ data } : { data: IMockModel }): Promise<void> => {
+  public reciveRMQ = async ({ data } : { data: IMockModel }): Promise<boolean> => {
     if (!data.ok) {
-      throw new RmqError('[SendControllerMock/reciveRMQ] error cast message')
+      return false
     }
+    return true
   }
 }
 

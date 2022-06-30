@@ -21,8 +21,8 @@ winstonLoggerErrorSpy.mockImplementation(mockError)
 const connectSpy = jest.spyOn(amqp, 'connect')
 
 // Config rmq reciver
-const eventName: string = 'index.created'
-const queue = 'userService.index.v1.queue.'
+const eventName: string = 'test.reciver'
+const queue = 'userService.test.v1.queue.'
 
 // Mock controller
 const controllerMock = sendControllerMock
@@ -30,6 +30,11 @@ const controllerMock = sendControllerMock
 // Init TEST
 const exchangeBaseName: string = Env.EXCHANGE_BASE_NAME
 const reciveRmq = new ReciveRmq<IMockModel>(exchangeBaseName, eventName, queue, controllerMock)
+
+// reciver spy retryCoonection
+
+const retryConnection = jest.spyOn(reciveRmq, 'retryConnection')
+retryConnection.mockImplementation(() => true)
 
 function delay (ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -41,6 +46,7 @@ describe('Message Broker RBQ reciver', () => {
     mockInfo.mockClear()
     connectSpy.mockClear()
     mockError.mockClear()
+    retryConnection.mockClear()
   })
   afterEach(async () => {
     // Clear mocks
@@ -59,16 +65,16 @@ describe('Message Broker RBQ reciver', () => {
     expect(connectSpy).toBeCalledTimes(1)
     expect(mockInfo).toBeCalledTimes(1)
   })
-  test('should thow RmqError error to no connection RMQ', async () => {
+  test('should retry connection to RMQ', async () => {
     await reciveRmq.start({ url: 'amqp://localhost2' })
-    expect(mockError).toBeCalledTimes(1)
+    expect(retryConnection).toBeCalledTimes(1)
   })
 
   test('should recived correct message', async () => {
     await reciveRmq.start()
     await testRmq.sendMessage<IMockModel>(reciveRmq.exchangeName, messageOk)
 
-    await delay(5)
+    // await delay(5)
 
     await testRmq.closeConnection()
     await reciveRmq.stop()
@@ -80,7 +86,7 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.start()
 
     await testRmq.sendMessage<IMockModel>(reciveRmq.exchangeName, messageError)
-    await delay(20)
+    // await delay(50)
 
     await testRmq.closeConnection()
     await reciveRmq.stop()
@@ -93,7 +99,7 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.start()
 
     await testRmq.sendMessages<IMockModel>(reciveRmq.exchangeName, [messageOk, messageOk])
-    await delay(30)
+    await delay(50)
     await testRmq.closeConnection()
     await reciveRmq.stop()
     expect(mockInfo).toBeCalledTimes(3)
@@ -103,7 +109,7 @@ describe('Message Broker RBQ reciver', () => {
     await reciveRmq.start()
 
     await testRmq.sendMessages<IMockModel>(reciveRmq.exchangeName, [messageOk, messageError])
-    await delay(30)
+    await delay(50)
     await testRmq.closeConnection()
     await reciveRmq.stop()
 

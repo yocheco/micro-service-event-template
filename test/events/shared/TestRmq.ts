@@ -1,11 +1,11 @@
-import amqp, { Channel, Connection } from 'amqplib'
+import amqp, { ConfirmChannel, Connection } from 'amqplib'
 
 import { Env } from '../../../src/config/env/env'
 import { RmqError } from '../../../src/shared/errors/rmqError'
 import { IMessageBus } from '../../../src/shared/interfaces/rmq/messageBus'
 
 let connection : Connection
-let channel : Channel
+let channel : ConfirmChannel
 class TestRmq {
   private async connectionRmq () {
     try {
@@ -33,6 +33,7 @@ class TestRmq {
     await this.connectionRmq()
     try {
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
+      await channel.waitForConfirms()
     } catch (error) {
       throw new RmqError('[TestRmq/sendMessage] Error test send message')
     }
@@ -43,6 +44,7 @@ class TestRmq {
     try {
       messages.forEach(async (message) => {
         await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
+        await channel.waitForConfirms()
       })
     } catch (error) {
       throw new RmqError('[TestRmq/sendMessage] Error test send message')
