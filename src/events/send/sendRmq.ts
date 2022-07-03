@@ -75,9 +75,10 @@ export class SendRmq<T> {
   }
 
   public retryConnection ({ url, data }:{url?: string, data?: T} = {}) {
+    const calculateBackOffDelayMs = (backoffTime: number) => 1000 * (backoffTime + Math.random())
     setTimeout(() => {
       this.send({ url, data })
-    }, 7000)
+    }, calculateBackOffDelayMs(20))
     winstonLogger.info('[SendRmq/retryConnection] Retry connection to Rmq')
   }
 
