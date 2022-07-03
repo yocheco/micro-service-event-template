@@ -18,19 +18,23 @@ const mongoConnectSpy = jest.spyOn(mongoose, 'connect')
 // MongoseDb
 const mongoDb = new MongoDb()
 
+// Retry Coonection mongo Spy
+const retryConnection = jest.spyOn(mongoDb, 'retryConnection')
+retryConnection.mockImplementation(() => true)
+
 describe('Mongo connection', () => {
   beforeEach(async () => {
-    // Clear mocks
+    // Clear mocks info
     mockInfo.mockClear()
-    mongoConnectSpy.mockClear()
     mockError.mockClear()
+    // Crear moks mongo
+    mongoConnectSpy.mockClear()
+    retryConnection.mockClear()
   })
+
   afterEach(async () => {
-    // Clear mocks
-    mockInfo.mockClear()
-    mongoConnectSpy.mockClear()
-    mockError.mockClear()
   })
+
   test('should connect correct to mongo db', async () => {
     await mongoDb.start()
     await mongoDb.stop()
@@ -40,11 +44,12 @@ describe('Mongo connection', () => {
     expect(mockError).not.toBeCalled()
   })
 
-  test('should no connected and log error to url incorrected', async () => {
-    await mongoDb.start({ url: '//utp' })
+  test('should retry connection to error in server to mongodb', async () => {
+    await mongoDb.start({ url: 'mongodb://localhost:11/dc' })
 
     expect(mongoConnectSpy).toBeCalledTimes(1)
     expect(mockError).toBeCalledTimes(1)
     expect(mockInfo).not.toBeCalled()
+    expect(retryConnection).toBeCalledTimes(1)
   })
 })

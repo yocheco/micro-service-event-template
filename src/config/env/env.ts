@@ -57,6 +57,11 @@ const config = convict({
       format: String,
       default: 'mvc',
       env: 'MONGO_DB'
+    },
+    ms: {
+      format: Number,
+      default: 30000,
+      env: 'MONGO_MS_CONNECTION'
     }
   }
 
@@ -80,7 +85,8 @@ export namespace Env{
   export const PORT = config.get('port')
 
   // MONGO
-  export const MONGOURI = urlDbMongo()
+  export const MONGO_URI = urlDbMongo()
+  export const MONGO_MS_CONNECTION: number = config.get('mongo').ms
 
   // RMQ
   // connect
