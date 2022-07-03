@@ -35,10 +35,6 @@ describe('Message Broker RBQ send', () => {
     retryConnection.mockClear()
   })
   afterEach(async () => {
-    // Clear mocks
-    mockInfo.mockClear()
-    mockError.mockClear()
-    retryConnection.mockClear()
   })
 
   test('should connect to RMQ', async () => {
@@ -48,7 +44,7 @@ describe('Message Broker RBQ send', () => {
     expect(mockInfo).toBeCalledTimes(1)
   })
 
-  test('should retry-connection to down RMQ server ', async () => {
+  test('should retry-connection to down RMQ server', async () => {
     await sendRmq.send({ url: 'amqp://localhost2' })
 
     expect(mockError).toBeCalledTimes(1)
