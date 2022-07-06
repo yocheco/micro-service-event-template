@@ -11,6 +11,7 @@ jobs:
         node-version: [16.15, 18.x]
         mongodb-version: [4.4]
         rabbitmq-version: ['3.8.2-management-alpine']
+        redis-version: [7]
 
     steps:
       - uses: actions/checkout@v3
@@ -29,6 +30,11 @@ jobs:
         uses: nijel/rabbitmq-action@v1.0.0
         with:
           rabbitmq version: ${{ matrix.rabbitmq-version }}
+
+      - name: 🟥  Launch Redis
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+          redis-version: ${{ matrix.redis-version }}
           
       - name: 🔧 Install dependencies npm
         run: |
