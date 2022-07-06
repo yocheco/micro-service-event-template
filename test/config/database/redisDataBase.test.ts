@@ -19,7 +19,7 @@ const redisDb = new RedisDb()
 // redis Spy
 const redisConnectSpy = jest.spyOn(redis, 'createClient')
 
-describe('Mongo connection', () => {
+describe('Redis connection', () => {
   beforeEach(async () => {
     // Clear mocks info
     mockInfo.mockClear()
@@ -31,8 +31,10 @@ describe('Mongo connection', () => {
   afterEach(async () => {
   })
 
-  test('should connect correct to mongo db', async () => {
+  test('should connect correct to [Redis] db', async () => {
     await redisDb.start()
+
+    await redisDb.stop()
 
     expect(redisConnectSpy).toBeCalledTimes(1)
     expect(mockInfo).toBeCalledTimes(1)
