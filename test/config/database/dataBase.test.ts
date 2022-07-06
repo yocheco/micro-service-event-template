@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-import { MongoDb } from '../../../src/config/dataBase/dataBase'
+import { MongoDb } from '../../../src/config/dataBase/MongoDb'
 import winstonLogger, { Levels } from '../../../src/lib/winstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
 

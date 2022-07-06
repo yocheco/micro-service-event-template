@@ -1,9 +1,9 @@
-import mongoose from 'mongoose'
+import mongoose, { ConnectOptions } from 'mongoose'
 
 import winstonLogger from '../../lib/winstonLogger'
 import { Env } from '../env/env'
 
-const options = {
+const options: ConnectOptions = {
   keepAlive: true,
   serverSelectionTimeoutMS: Env.MONGO_MS_CONNECTION
 }
