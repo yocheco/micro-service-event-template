@@ -1,5 +1,5 @@
 
-import { MongoDb } from './config/dataBase/mongoDb'
+import { MongoDb } from './config/dataBase/mongoDataBase'
 import { Env } from './config/env/env'
 import { recivers } from './recivers'
 import { Server } from './server'
