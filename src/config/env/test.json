@@ -2,5 +2,9 @@
   "mongo":{
     "db": "test",
     "ms": 150
+  },
+  "redis":{
+    "db": "test",
+    "ms": 150
   }
 }

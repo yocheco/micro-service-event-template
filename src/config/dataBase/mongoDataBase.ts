@@ -1,9 +1,10 @@
-import mongoose from 'mongoose'
+import mongoose, { ConnectOptions } from 'mongoose'
 
+import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
 import { Env } from '../env/env'
 
-const options = {
+const options: ConnectOptions = {
   keepAlive: true,
   serverSelectionTimeoutMS: Env.MONGO_MS_CONNECTION
 }
@@ -23,15 +24,14 @@ export class MongoDb {
     try {
       mongoose.disconnect()
     } catch (error) {
-      winstonLogger.error('[Mongoose] error to desconnected')
+      winstonLogger.info('[Mongoose] connected')
     }
   }
 
   public retryConnection ({ url }:{url?: string} = {}) {
     winstonLogger.info('[Mongoose/retryConnection] Retry connection to Mongo')
-    const calculateBackOffDelayMs = (backoffTime: number) => 1000 * (backoffTime + Math.random())
     setTimeout(() => {
       this.start({ url })
-    }, calculateBackOffDelayMs(20))
+    }, backOff.calculateBackOffDelayMs(20))
   }
 }

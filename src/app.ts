@@ -1,10 +1,14 @@
-import { MongoDb } from './config/dataBase/dataBase'
+
+import { MongoDb } from './config/dataBase/mongoDataBase'
+import { RedisDb } from './config/dataBase/redisDataBase'
 import { Env } from './config/env/env'
 import { recivers } from './recivers'
 import { Server } from './server'
 
 // MongoseDb
 const mongoDb = new MongoDb()
+// RedisDb
+const redisDb = new RedisDb()
 
 export class App {
   server?: Server
@@ -15,6 +19,7 @@ export class App {
 
     // init mongo db
     await mongoDb.start()
+    await redisDb.start()
     // init Rmq reciver
     if (Env.ENV !== 'test') await recivers.start()
     return this.server.listen()
@@ -27,6 +32,8 @@ export class App {
   async stop () {
     // stop mongo db
     await mongoDb.stop()
+    // stop redis db
+    await redisDb.stop()
     // stop Rmq reciver
     if (Env.ENV !== 'test') await recivers.stop()
     return this.server?.stop()

@@ -63,8 +63,29 @@ const config = convict({
       default: 30000,
       env: 'MONGO_MS_CONNECTION'
     }
+  },
+  redis: {
+    host: {
+      format: String,
+      default: 'localhost',
+      env: 'REDIS_HOSTNAME'
+    },
+    port: {
+      format: Number,
+      default: 6379,
+      env: 'REDIS_PORT'
+    },
+    db: {
+      format: String,
+      default: 'mvc',
+      env: 'REDIS_DB'
+    },
+    ms: {
+      format: Number,
+      default: 5000,
+      env: 'REDIS_MS_CONNECTION'
+    }
   }
-
 })
 
 const env = config.get('env')
@@ -94,4 +115,10 @@ export namespace Env{
   // send
   export const EXCHANGE_TYPE: string = config.get('rmq').exchange.type
   export const EXCHANGE_BASE_NAME: string = config.get('rmq').exchange.name
+
+  // REDIS
+  export const REDIS_HOSTNAME: string = config.get('redis').host
+  export const REDIS_PORT: number = config.get('redis').port
+  export const REDIS_DB: string = config.get('redis').db
+  export const REDIS_MS_CONNECTION: number = config.get('redis').ms
 }

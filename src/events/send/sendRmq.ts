@@ -2,6 +2,7 @@ import amqp, { ConfirmChannel, Connection } from 'amqplib'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Env } from '../../config/env/env'
+import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
 import { RmqConnectionError } from '../../shared/errors/rmqError'
 import { IMessageBus } from '../../shared/interfaces/rmq/messageBus'
@@ -75,10 +76,9 @@ export class SendRmq<T> {
   }
 
   public retryConnection ({ url, data }:{url?: string, data?: T} = {}) {
-    const calculateBackOffDelayMs = (backoffTime: number) => 1000 * (backoffTime + Math.random())
     setTimeout(() => {
       this.send({ url, data })
-    }, calculateBackOffDelayMs(20))
+    }, backOff.calculateBackOffDelayMs(20))
     winstonLogger.info('[SendRmq/retryConnection] Retry connection to Rmq')
   }
 
