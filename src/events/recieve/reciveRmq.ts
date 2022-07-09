@@ -35,15 +35,15 @@ export class ReciveRmq<T> {
       })
     } catch (error) {
       const message = error instanceof Error
-        ? `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection: ${error.message}`
-        : `[ReciveRmq/connectionRmq => ${this.exchangeName}] Error connection`
+        ? `[ReciveRmq] => ${this.exchangeName} Error connection: ${error.message}`
+        : `[ReciveRmq] => ${this.exchangeName} Error connection`
       throw new RmqConnectionError(message)
     }
   }
 
   private consume = async ({ message }:{message: amqp.ConsumeMessage|null}) => {
     try {
-      if (message == null) throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error Sould send a valid message`)
+      if (message == null) throw new RmqError(`[ReciveRmq] consume/${this.eventName} Error Sould send a valid message`)
 
       const data = await deserializeMessage<T>(message)
 
@@ -53,15 +53,15 @@ export class ReciveRmq<T> {
       // return message to queue
       if (!response) {
         // await channel.nack(message)
-        throw new RmqError(`[ReciveRmq/consume/${this.eventName}] Error: Controller no ack message`)
+        throw new RmqError(`[ReciveRmq] consume/${this.eventName} Error: Controller no ack message`)
       }
 
       channel.ack(message)
-      winstonLogger.info(`[ReciveBus/consume => ${this.exchangeName}] Message ack ${this.queue}`)
+      winstonLogger.info(`[ReciveBus] consume => ${this.exchangeName} Message ack ${this.queue}`)
     } catch (error) {
       const message = error instanceof Error
-        ? `[ReciveRmq/consume => ${this.exchangeName}] Error consume: ${error.message}`
-        : `[ReciveRmq/consume => ${this.exchangeName}] Error consume`
+        ? `[ReciveRmq] consume => ${this.exchangeName} Error consume: ${error.message}`
+        : `[ReciveRmq] consume => ${this.exchangeName} Error consume`
       winstonLogger.error(message)
     }
   }
@@ -82,8 +82,8 @@ export class ReciveRmq<T> {
         this.retryConnection()
       }
       const message = error instanceof Error
-        ? `[ReciveRmq/start => ${this.exchangeName}] Error to start: ${error.message}`
-        : `[ReciveRmq/start => ${this.exchangeName}] Error to start`
+        ? `[ReciveRmq] => ${this.exchangeName} Error to start: ${error.message}`
+        : `[ReciveRmq] => ${this.exchangeName} Error to start`
       winstonLogger.error(message)
     }
   }
@@ -93,14 +93,14 @@ export class ReciveRmq<T> {
       await connection?.close()
     } catch (error) {
       const message = error instanceof Error
-        ? `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection: ${error.message}`
-        : `[ReciveRmq/stop => ${this.exchangeName}] Error to close connection`
+        ? `[ReciveRmq] => ${this.exchangeName} Error to close connection: ${error.message}`
+        : `[ReciveRmq] => ${this.exchangeName} Error to close connection`
       winstonLogger.error(message)
     }
   }
 
   public retryConnection () {
     backOff.delay(this.start, 20)
-    winstonLogger.info(`[ReciveRmq/retryConnection => ${this.exchangeName}] Retry connection to Rmq`)
+    winstonLogger.info(`[ReciveRmq] => ${this.exchangeName} Retry connection to Rmq`)
   }
 }

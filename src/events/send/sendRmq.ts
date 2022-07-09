@@ -25,8 +25,8 @@ export class SendRmq<T> {
        channel = await connection.createConfirmChannel()
      } catch (error) {
        const message = error instanceof Error
-         ? `[SendRmq/connectionRmq/] Error connect Rmq to ${exchangeBaseName}${this.eventName} : ${error.message}`
-         : `[SendRmq/connectionRmq/] Error connect Rmq to ${exchangeBaseName}${this.eventName}`
+         ? `[SendRmq] Error connect Rmq to ${exchangeBaseName}${this.eventName} : ${error.message}`
+         : `[SendRmq] Error connect Rmq to ${exchangeBaseName}${this.eventName}`
        throw new RmqConnectionError(message)
      }
    }
@@ -47,11 +47,11 @@ export class SendRmq<T> {
 
        await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
        await channel.waitForConfirms()
-       winstonLogger.info(`[SendRmq/publish] publish to ${exchangeName}`)
+       winstonLogger.info(`[SendRmq] publish to ${exchangeName}`)
      } catch (error) {
        const message = error instanceof Error
-         ? `[SendRmq/publish] Error publish message to ${exchangeBaseName}${this.eventName}: ${error.message}`
-         : `[SendRmq/publish] Error publish message to ${exchangeBaseName}${this.eventName}`
+         ? `[SendRmq] Error publish message to ${exchangeBaseName}${this.eventName}: ${error.message}`
+         : `[SendRmq] Error publish message to ${exchangeBaseName}${this.eventName}`
        winstonLogger.error(message)
      }
    }
@@ -60,7 +60,7 @@ export class SendRmq<T> {
   public send = async ({ url = Env.CONNECTION_RMQ, data }:{url?: string, data?: T} = {}): Promise<void> => {
     try {
       await this.connectionRmq({ url })
-      winstonLogger.info('[SendRmq/send] Connected')
+      winstonLogger.info('[SendRmq] Connected')
       // Publish message
       if (data) await this.publish({ data })
     } catch (error) {
@@ -69,8 +69,8 @@ export class SendRmq<T> {
         this.retryConnection({ url, data })
       }
       const message = error instanceof Error
-        ? `[SendRmq/send] Error send message to ${exchangeBaseName}${this.eventName}: ${error.message}`
-        : `[SendRmq/send] Error send message to ${exchangeBaseName}${this.eventName}`
+        ? `[SendRmq] Error send message to ${exchangeBaseName}${this.eventName}: ${error.message}`
+        : `[SendRmq] Error send message to ${exchangeBaseName}${this.eventName}`
       winstonLogger.error(message)
     }
   }
@@ -79,7 +79,7 @@ export class SendRmq<T> {
     setTimeout(() => {
       this.send({ url, data })
     }, backOff.calculateBackOffDelayMs(20))
-    winstonLogger.info('[SendRmq/retryConnection] Retry connection to Rmq')
+    winstonLogger.info('[SendRmq] Retry connection to Rmq')
   }
 
   // Public Stop
@@ -88,8 +88,8 @@ export class SendRmq<T> {
       await connection?.close()
     } catch (error) {
       const message = error instanceof Error
-        ? `[SendRmq/stop] Error close connection to ${exchangeBaseName}${this.eventName}: ${error.message}`
-        : `[SendRmq/stop] Error close connection to ${exchangeBaseName}${this.eventName}`
+        ? `[SendRmq] Error close connection to ${exchangeBaseName}${this.eventName}: ${error.message}`
+        : `[SendRmq] Error close connection to ${exchangeBaseName}${this.eventName}`
       winstonLogger.error(message)
     }
   }
