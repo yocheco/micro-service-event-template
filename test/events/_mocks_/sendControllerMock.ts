@@ -1,8 +1,8 @@
 
-import { ISendController } from '../../../src/shared/interfaces/rmq/sendRmqController'
+import { IReciveController } from '../../../src/shared/interfaces/rmq/reciveRmqController'
 import { IMockModel } from './model'
 
-class SendControllerMock implements ISendController<IMockModel> {
+class SendControllerMock implements IReciveController<IMockModel> {
   public reciveRMQ = async ({ data } : { data: IMockModel }): Promise<boolean> => {
     if (!data.ok) {
       return false

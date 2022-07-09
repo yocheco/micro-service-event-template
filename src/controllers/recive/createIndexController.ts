@@ -1,7 +1,7 @@
 import { Iindex } from '../../models'
-import { ISendController } from '../../shared/interfaces/rmq/sendRmqController'
+import { IReciveController } from '../../shared/interfaces/rmq/reciveRmqController'
 
-class CreateIndexController implements ISendController<Iindex> {
+class CreateIndexController implements IReciveController<Iindex> {
   public reciveRMQ = async ({ data }:{ data: Iindex }): Promise<boolean> => {
     const n = Math.floor(Math.random() * 10)
 

@@ -4,7 +4,7 @@ import { Env } from '../../config/env/env'
 import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
 import { RmqConnectionError, RmqError } from '../../shared/errors/rmqError'
-import { ISendController } from '../../shared/interfaces/rmq/sendRmqController'
+import { IReciveController } from '../../shared/interfaces/rmq/reciveRmqController'
 import { deserializeMessage } from '../shared/serializeMessage'
 
 // export const eventName = 'index.created'
@@ -18,7 +18,7 @@ export class ReciveRmq<T> {
   public exchangeName: string
   public queue: string
 
-  constructor (exchangeBaseName: string, public eventName: string, queueService: string, public controller: ISendController<T>) {
+  constructor (exchangeBaseName: string, public eventName: string, queueService: string, public controller: IReciveController<T>) {
     this.exchangeName = exchangeBaseName + eventName
     this.queue = queueService + eventName
   }
