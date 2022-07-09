@@ -6,7 +6,7 @@ import { ReciveRmq } from '../../../src/events/recieve/reciveRmq'
 import winstonLogger, { Levels } from '../../../src/lib/winstonLogger'
 import { mockError, mockInfo } from '../../shared/mockWinstonLogger'
 import { IMockModel, messageError, messageOk } from '../_mocks_/model'
-import { sendControllerMock } from '../_mocks_/sendControllerMock'
+import { reciveControllerMock } from '../_mocks_/reciveControllerMock'
 import testRmq from '../shared/TestRmq'
 
 // info mock
@@ -25,7 +25,7 @@ const eventName: string = 'test.reciver'
 const queue = 'userService.test.v1.queue.'
 
 // Mock controller
-const controllerMock = sendControllerMock
+const controllerMock = reciveControllerMock
 
 // Init TEST
 const exchangeBaseName: string = Env.EXCHANGE_BASE_NAME

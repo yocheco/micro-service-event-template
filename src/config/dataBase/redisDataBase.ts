@@ -29,7 +29,8 @@ export class RedisDb {
   }
 
   async retryConnection ({ port = Env.REDIS_PORT }:{ port?: number } = {}) {
-    winstonLogger.info('[Mongoose/retryConnection] Retry connection to Mongo')
+    winstonLogger.info('[Redis] Retry connection to redis')
+
     setTimeout(() => {
       this.start({ port })
     }, backOff.calculateBackOffDelayMs(20))

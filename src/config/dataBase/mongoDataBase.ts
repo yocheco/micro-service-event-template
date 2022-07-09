@@ -13,7 +13,7 @@ export class MongoDb {
   public start = async ({ url = Env.MONGO_URI }:{ url?: string } = {}) => {
     try {
       await mongoose.connect(url, options)
-      winstonLogger.info('[Mongoose is connected]')
+      winstonLogger.info('[Mongoose] connected')
     } catch (error) {
       winstonLogger.error('[Mongoose] error to connected')
       this.retryConnection({ url })
@@ -24,12 +24,12 @@ export class MongoDb {
     try {
       mongoose.disconnect()
     } catch (error) {
-      winstonLogger.info('[Mongoose] connected')
+      winstonLogger.error('[Mongoose] error to desconnected')
     }
   }
 
   public retryConnection ({ url }:{url?: string} = {}) {
-    winstonLogger.info('[Mongoose/retryConnection] Retry connection to Mongo')
+    winstonLogger.info('[Mongoose] Retry connection to Mongo')
     setTimeout(() => {
       this.start({ url })
     }, backOff.calculateBackOffDelayMs(20))

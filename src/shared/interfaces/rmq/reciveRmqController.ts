@@ -1,3 +1,3 @@
-export interface ISendController<T>{
+export interface IReciveController<T>{
   reciveRMQ: ({ data } : {data: T}) => Promise<boolean>
 }
