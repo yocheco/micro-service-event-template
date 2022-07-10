@@ -48,6 +48,7 @@ export class SendRmq<T> {
        await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
        await channel.waitForConfirms()
        winstonLogger.info(`[SendRmq] publish to ${exchangeName}`)
+       await this.stop()
      } catch (error) {
        const message = error instanceof Error
          ? `[SendRmq] Error publish message to ${exchangeBaseName}${this.eventName}: ${error.message}`
@@ -85,6 +86,7 @@ export class SendRmq<T> {
   // Public Stop
   public stop = async (): Promise<void> => {
     try {
+      console.log('stop')
       await connection?.close()
     } catch (error) {
       const message = error instanceof Error

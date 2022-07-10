@@ -10,14 +10,14 @@ import { HttpStatusCode } from '../shared/types/http.model'
 class IndexController {
   public index = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const n = Math.floor(Math.random() * 10)
+      // const n = Math.floor(Math.random() * 10)
 
-      if (n > 5) throw new ApiError('[IndexController] Error Auth no enviado')
+      // if (n > 5) throw new ApiError('[IndexController] Error Auth no enviado')
 
       // Send event
       const eventName:string = 'index.created'
       const sendRmq = new SendRmq<string>(eventName)
-      await sendRmq.send({ data: 'test' })
+      await sendRmq.send({ data: 'test off' })
 
       // Create response
       const responseOk: IApiResponse<string> = {
