@@ -19,7 +19,7 @@ export class SendRmq<T> {
      this.eventName = eventName
    }
 
-   private connectionRmq = async ({ url } : {url: string}) => {
+   private connectionRmq = async ({ url }: { url: string }) => {
      try {
        connection = await amqp.connect(url)
        channel = await connection.createConfirmChannel()
@@ -31,7 +31,7 @@ export class SendRmq<T> {
      }
    }
 
-   private publish = async ({ data }:{data: T}) => {
+   private publish = async ({ data }: { data: T }) => {
      try {
        const exchangeName = exchangeBaseName + this.eventName
        channel.assertExchange(exchangeName, Env.EXCHANGE_TYPE, { durable: true })
@@ -48,6 +48,8 @@ export class SendRmq<T> {
        await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
        await channel.waitForConfirms()
        winstonLogger.info(`[SendRmq] publish to ${exchangeName}`)
+       // stop connection after send event
+       await this.stop()
      } catch (error) {
        const message = error instanceof Error
          ? `[SendRmq] Error publish message to ${exchangeBaseName}${this.eventName}: ${error.message}`
@@ -57,7 +59,7 @@ export class SendRmq<T> {
    }
 
   // Public Send
-  public send = async ({ url = Env.CONNECTION_RMQ, data }:{url?: string, data?: T} = {}): Promise<void> => {
+  public send = async ({ url = Env.CONNECTION_RMQ, data }: { url?: string, data?: T } = {}): Promise<void> => {
     try {
       await this.connectionRmq({ url })
       winstonLogger.info('[SendRmq] Connected')
@@ -75,7 +77,7 @@ export class SendRmq<T> {
     }
   }
 
-  public retryConnection ({ url, data }:{url?: string, data?: T} = {}) {
+  public retryConnection ({ url, data }: { url?: string, data?: T } = {}) {
     setTimeout(() => {
       this.send({ url, data })
     }, backOff.calculateBackOffDelayMs(20))
