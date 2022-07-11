@@ -21,6 +21,22 @@ export class RedisDb {
         }
       })
       await client.connect()
+      // lisent connection [Redis]
+      client.on('connect', () => {
+        console.log('[Redis] Client connected to redis...')
+      })
+
+      client.on('ready', () => {
+        console.log('[Redis] Client connected to redis and ready to use...')
+      })
+
+      client.on('error', (err) => {
+        console.log('[Redis] ' + err.message)
+      })
+
+      client.on('end', () => {
+        console.log('[Redis] Client disconnected from redis')
+      })
       winstonLogger.info('[Redis] connected')
     } catch (error) {
       winstonLogger.error('[Redis] Error connection')
