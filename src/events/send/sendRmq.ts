@@ -27,7 +27,7 @@ export class SendRmq<T> {
        const message = error instanceof Error
          ? `[SendRmq] Error connect Rmq to ${exchangeBaseName}${this.eventName} : ${error.message}`
          : `[SendRmq] Error connect Rmq to ${exchangeBaseName}${this.eventName}`
-       throw new RmqConnectionError(message)
+       throw new RmqConnectionError({ message: message })
      }
    }
 

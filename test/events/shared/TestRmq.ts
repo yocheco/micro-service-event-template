@@ -12,7 +12,7 @@ class TestRmq {
       connection = await amqp.connect(Env.CONNECTION_RMQ)
       channel = await connection.createConfirmChannel()
     } catch (error) {
-      throw new RmqError('[TestRmq/connectionRmq] Error connect to RMQ')
+      throw new RmqError({ message: '[TestRmq/connectionRmq] Error connect to RMQ' })
     }
   }
 
@@ -35,7 +35,7 @@ class TestRmq {
       await channel.publish(exchangeName, '', Buffer.from(JSON.stringify(message)), { persistent: true })
       await channel.waitForConfirms()
     } catch (error) {
-      throw new RmqError('[TestRmq/sendMessage] Error test send message')
+      throw new RmqError({ message: '[TestRmq/sendMessage] Error test send message' })
     }
   }
 
@@ -47,7 +47,7 @@ class TestRmq {
         await channel.waitForConfirms()
       })
     } catch (error) {
-      throw new RmqError('[TestRmq/sendMessage] Error test send message')
+      throw new RmqError({ message: '[TestRmq/sendMessage] Error test send message' })
     }
   }
 }

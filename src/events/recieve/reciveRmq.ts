@@ -37,13 +37,13 @@ export class ReciveRmq<T> {
       const message = error instanceof Error
         ? `[ReciveRmq] => ${this.exchangeName} Error connection: ${error.message}`
         : `[ReciveRmq] => ${this.exchangeName} Error connection`
-      throw new RmqConnectionError(message)
+      throw new RmqConnectionError({ message: message })
     }
   }
 
   private consume = async ({ message }:{message: amqp.ConsumeMessage|null}) => {
     try {
-      if (message == null) throw new RmqError(`[ReciveRmq] consume/${this.eventName} Error Sould send a valid message`)
+      if (message == null) throw new RmqError({ message: `[ReciveRmq] consume/${this.eventName} Error Sould send a valid message` })
 
       const data = await deserializeMessage<T>(message)
 
@@ -53,7 +53,7 @@ export class ReciveRmq<T> {
       // return message to queue
       if (!response) {
         // await channel.nack(message)
-        throw new RmqError(`[ReciveRmq] consume/${this.eventName} Error: Controller no ack message`)
+        throw new RmqError({ message: `[ReciveRmq] consume/${this.eventName} Error: Controller no ack message` })
       }
 
       channel.ack(message)

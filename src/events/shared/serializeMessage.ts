@@ -10,6 +10,6 @@ export async function deserializeMessage<T> (message: ConsumeMessage): Promise<T
     const generic = content.data.attributes as T
     return generic
   } catch (error) {
-    throw new RmqErrorCastMessage('[deserializeMessage] Error to deserializeMessage')
+    throw new RmqErrorCastMessage({ message: '[deserializeMessage] Error to deserializeMessage' })
   }
 }
