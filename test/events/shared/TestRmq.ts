@@ -2,7 +2,7 @@ import amqp, { ConfirmChannel, Connection } from 'amqplib'
 
 import { Env } from '../../../src/config/env/env'
 import { RmqError } from '../../../src/shared/errors/rmqError'
-import { IMessageBus } from '../../../src/shared/interfaces/rmq/messageBus'
+import { IMessageBus } from '../../../src/shared/interfaces/rmq/messages/messageBus'
 
 let connection : Connection
 let channel : ConfirmChannel

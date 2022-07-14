@@ -1,9 +1,9 @@
 import { Env } from './config/env/env'
 import { createIndexController } from './controllers/recive/createIndexController'
 import { ReciveRmq } from './events/recieve/reciveRmq'
-import { Iindex } from './models'
+import { IIndexMessage } from './shared/interfaces/rmq/messages/thisService/IIndexMessage'
 
-let reciveRmqCreateIndex: ReciveRmq<Iindex>
+let reciveRmqCreateIndex: ReciveRmq<IIndexMessage>
 
 class Recivers {
   public start = async (): Promise<void> => {
@@ -13,7 +13,7 @@ class Recivers {
       const eventName: string = 'index.created'
       const queue = 'userService.index.v1.queue.'
 
-      reciveRmqCreateIndex = new ReciveRmq<Iindex>(exchangeBaseName, eventName, queue, createIndexController)
+      reciveRmqCreateIndex = new ReciveRmq<IIndexMessage>(exchangeBaseName, eventName, queue, createIndexController)
       await reciveRmqCreateIndex.start()
     } catch (error) {
       console.error(error)

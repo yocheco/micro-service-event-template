@@ -4,6 +4,7 @@ import { Env } from '../../config/env/env'
 import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
 import { RmqConnectionError, RmqError } from '../../shared/errors/rmqError'
+import { IMessage } from '../../shared/interfaces/rmq/messages/Imessage'
 import { IReciveController } from '../../shared/interfaces/rmq/reciveRmqController'
 import { deserializeMessage } from '../shared/serializeMessage'
 
@@ -14,7 +15,7 @@ import { deserializeMessage } from '../shared/serializeMessage'
 let connection: Connection
 let channel: Channel
 
-export class ReciveRmq<T> {
+export class ReciveRmq<T extends IMessage> {
   public exchangeName: string
   public queue: string
 
