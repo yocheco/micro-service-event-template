@@ -2,7 +2,7 @@
 import { ConsumeMessage } from 'amqplib'
 
 import { RmqErrorCastMessage } from '../../shared/errors/rmqError'
-import { IMessageBus } from '../../shared/interfaces/rmq/messageBus'
+import { IMessageBus } from '../../shared/interfaces/rmq/messages/messageBus'
 
 export async function deserializeMessage<T> (message: ConsumeMessage): Promise<T> {
   try {

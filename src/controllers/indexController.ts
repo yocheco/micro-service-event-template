@@ -5,6 +5,7 @@ import { SendRmq } from '../events/send/sendRmq'
 import winstonLogger from '../lib/winstonLogger'
 import { ApiError } from '../shared/errors/apiError'
 import { IApiResponse } from '../shared/interfaces/apiResponse'
+import { IMessage } from '../shared/interfaces/rmq/messages/Imessage'
 import { HttpStatusCode } from '../shared/types/http.model'
 
 class IndexController {
@@ -16,14 +17,14 @@ class IndexController {
 
       // Send event
       const eventName:string = 'index.created'
-      const sendRmq = new SendRmq<string>(eventName)
-      await sendRmq.send({ data: 'test off' })
+      const sendRmq = new SendRmq<IMessage>(eventName)
+      await sendRmq.send({ data: { service: 'service' } })
 
       // Create response
       const responseOk: IApiResponse<string> = {
         status: true,
         code: HttpStatusCode.OK,
-        data: 'test'
+        data: 'service ok'
       }
       res.status(httpStatus.OK).send(responseOk)
     } catch (err) {

@@ -1,12 +1,14 @@
-import { IMessageBus } from '../../../src/shared/interfaces/rmq/messageBus'
+import { IMessage } from '../../../src/shared/interfaces/rmq/messages/Imessage'
+import { IMessageBus } from '../../../src/shared/interfaces/rmq/messages/messageBus'
 
-export interface IMockModel{
+export interface IMockModel extends IMessage{
   test: string,
   ok: boolean
 }
 
 // message ok
 export const modelOk : IMockModel = {
+  service: 'test',
   ok: true,
   test: ''
 
@@ -22,6 +24,7 @@ export const messageOk: IMessageBus<IMockModel> = {
 
 // message ok
 export const modelError : IMockModel = {
+  service: 'test',
   ok: false,
   test: ''
 

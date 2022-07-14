@@ -5,7 +5,8 @@ import { Env } from '../../config/env/env'
 import { backOff } from '../../lib/backOff'
 import winstonLogger from '../../lib/winstonLogger'
 import { RmqConnectionError } from '../../shared/errors/rmqError'
-import { IMessageBus } from '../../shared/interfaces/rmq/messageBus'
+import { IMessage } from '../../shared/interfaces/rmq/messages/Imessage'
+import { IMessageBus } from '../../shared/interfaces/rmq/messages/messageBus'
 
 let connection: Connection
 let channel: ConfirmChannel
@@ -13,7 +14,7 @@ let channel: ConfirmChannel
 export const exchangeBaseName = Env.EXCHANGE_BASE_NAME
 // export const eventName = 'index.created'
 
-export class SendRmq<T> {
+export class SendRmq<T extends IMessage> {
    public eventName: string
    constructor (eventName:string) {
      this.eventName = eventName
